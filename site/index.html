@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>동신중 사회과 웹앱 탐험관</title>
+<meta name="description" content="동신중학교 학생들이 만든 사회과 학습 웹앱 모음">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧭</text></svg>">
+<style>
+  /* 디자인: 캔바 시안 "동신중 사회과 웹앱 탐험관"(지도·지구본 탐험 테마) 기준. 배너·아이콘은 캔바에서 생성 */
+  :root {
+    --navy: #1e3a5f;
+    --navy-d: #142a46;
+    --orange: #e07a2f;
+    --orange-d: #c4631c;
+    --paper: #f6efe1;
+    --card: #fffaf0;
+    --line: #e6d8bc;
+    --text: #2b2118;
+    --muted: #7a6a55;
+    --shadow: 0 2px 6px rgba(70, 50, 20, .06), 0 10px 24px rgba(70, 50, 20, .08);
+    --shadow-hover: 0 4px 10px rgba(70, 50, 20, .08), 0 18px 36px rgba(70, 50, 20, .16);
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0; min-height: 100vh; color: var(--text);
+    background-color: var(--paper);
+    background-image:
+      repeating-linear-gradient(0deg, rgba(30, 58, 95, .045) 0 1px, transparent 1px 64px),
+      repeating-linear-gradient(90deg, rgba(30, 58, 95, .045) 0 1px, transparent 1px 64px),
+      radial-gradient(1000px 600px at 85% -10%, rgba(224, 122, 47, .10), transparent 60%);
+    background-attachment: fixed;
+    font-family: system-ui, "Pretendard", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+    line-height: 1.45;
+  }
+  button, input, select, textarea { font: inherit; color: inherit; }
+  :focus-visible { outline: 3px solid var(--orange); outline-offset: 2px; }
+  .wrap { max-width: 1240px; margin: 0 auto; padding: 0 20px 32px; }
+
+  header { position: sticky; top: 0; z-index: 30; background: rgba(246, 239, 225, .92); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+  .bar { max-width: 1240px; margin: 0 auto; padding: 10px 20px; display: flex; align-items: center; gap: 12px; }
+  .brand { margin: 0; font-size: 1.2rem; font-weight: 900; letter-spacing: -.01em; white-space: nowrap; color: var(--navy); }
+  .brand b { color: var(--orange); }
+  .login { margin-left: auto; border: 0; cursor: pointer; min-height: 44px; padding: 0 18px; border-radius: 12px; background: var(--navy); color: #fff; font-weight: 800; white-space: nowrap; max-width: 55vw; overflow: hidden; text-overflow: ellipsis; }
+  .login:hover { background: var(--navy-d); }
+  .login.in { background: var(--card); color: var(--text); border: 1px solid var(--line); }
+  .login[hidden] { display: none; }
+
+  .hero { position: relative; overflow: hidden; margin-top: 18px; padding: 44px 44px 40px; min-height: 320px; border-radius: 26px; border: 1px solid var(--line); background: #efe3c9 url("./assets/hero.jpg") right center / cover no-repeat; box-shadow: var(--shadow); }
+  .hero::before { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(246,239,225,.97) 0%, rgba(246,239,225,.88) 40%, rgba(246,239,225,0) 68%); }
+  .hero > * { position: relative; }
+  .hero h1 { margin: 0; font-size: clamp(1.8rem, 4.2vw, 3rem); font-weight: 900; line-height: 1.2; letter-spacing: -.02em; color: var(--navy); }
+  .hero h1 em { font-style: normal; color: var(--orange); }
+  .hero p { margin: 12px 0 22px; color: var(--muted); font-size: 1.05rem; font-weight: 700; }
+  .stats { display: flex; flex-wrap: wrap; gap: 10px; }
+  .stat { display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-radius: 16px; background: var(--card); border: 1px solid var(--line); box-shadow: var(--shadow); }
+  .stat i { font-style: normal; font-size: 1.3rem; }
+  .stat small { display: block; color: var(--muted); font-size: .78rem; font-weight: 700; }
+  .stat strong { font-size: 1.3rem; font-weight: 900; color: var(--navy); }
+  .stat.accent strong { color: var(--orange); }
+  .stat[hidden] { display: none; }
+
+  .notice { margin-top: 18px; border: 1.5px solid #e2a54b; border-radius: 20px; background: #fff4dc; }
+  .notice[hidden] { display: none; }
+  .notice summary { display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 15px 20px; font-size: 1.05rem; font-weight: 900; color: #8a4b08; list-style: none; border-radius: 20px; }
+  .notice summary::-webkit-details-marker { display: none; }
+  .notice summary .count { padding: 2px 12px; border-radius: 999px; background: var(--orange); color: #fff; font-size: .88rem; }
+  .notice summary .hint { margin-left: auto; color: #a15d10; font-size: .85rem; font-weight: 600; }
+  .notice summary .hint::after { content: " ▾"; }
+  .notice[open] summary .hint::after { content: " ▴"; }
+  .notice-lead { margin: 0; padding: 0 20px 12px; color: #6b3b06; font-size: .95rem; }
+  .notice ul { list-style: none; margin: 0; padding: 0 14px 14px; display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+  .notice li { padding: 14px 16px; border-radius: 14px; background: var(--card); border: 1px solid #f0d49c; }
+  .notice .who { display: block; font-size: 1.05rem; font-weight: 900; overflow-wrap: anywhere; }
+  .notice .why { display: inline-block; margin: 6px 0; padding: 2px 10px; border-radius: 999px; background: #fde7bf; color: #8a4b08; font-size: .8rem; font-weight: 800; }
+  .notice .fix { margin: 0; color: #5b4a36; font-size: .92rem; }
+
+  .cats { display: flex; gap: 8px; margin-top: 22px; overflow-x: auto; padding: 2px 2px 6px; }
+  .cat { flex: none; min-height: 42px; padding: 0 16px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); border-radius: 999px; background: var(--card); font-weight: 800; color: #4a3b2a; }
+  .cat .n { color: var(--muted); font-weight: 700; font-size: .85rem; }
+  .cat[aria-pressed="true"] { background: var(--navy); border-color: var(--navy); color: #fff; }
+  .cat[aria-pressed="true"] .n { color: #cdd8e6; }
+
+  .tools { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 12px; }
+  .search { flex: 1 1 260px; max-width: 520px; min-height: 46px; padding: 0 16px 0 44px; border: 1px solid var(--line); border-radius: 14px; background: var(--card) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' fill='none' stroke='%23a08c70' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='9' cy='9' r='6'/%3E%3Cpath d='m14 14 4.5 4.5'/%3E%3C/svg%3E") 15px center no-repeat; }
+  .search::placeholder { color: #a8977d; }
+  .sorts { display: flex; gap: 6px; margin-left: auto; padding: 4px; border-radius: 14px; background: #ebdfc6; }
+  .sort { min-height: 38px; padding: 0 16px; cursor: pointer; border: 0; border-radius: 10px; background: transparent; font-weight: 800; color: var(--muted); }
+  .sort[aria-pressed="true"] { background: var(--card); color: var(--navy); box-shadow: 0 1px 4px rgba(70, 50, 20, .15); }
+
+  .grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); margin-top: 18px; }
+  .card { position: relative; border-radius: 22px; background: var(--card); border: 1px solid var(--line); box-shadow: var(--shadow); transition: transform .16s ease, box-shadow .16s ease; }
+  .card:hover, .card:focus-within { transform: translateY(-3px); box-shadow: var(--shadow-hover); }
+  .card-link { display: block; padding: 18px 18px 74px; color: inherit; text-decoration: none; border-radius: 22px; }
+  .top { display: flex; gap: 14px; align-items: flex-start; }
+  .icon { position: relative; flex: none; width: 84px; height: 84px; }
+  .icon img, .icon .fallback { width: 100%; height: 100%; object-fit: cover; border-radius: 20px; display: grid; place-items: center; box-shadow: 0 4px 12px rgba(70, 50, 20, .18); font-size: 2.4rem; background: #efe3c9; }
+  .medal { position: absolute; left: -6px; top: -8px; font-size: 1.4rem; filter: drop-shadow(0 1px 2px rgba(0,0,0,.25)); }
+  .meta { min-width: 0; flex: 1; padding-right: 48px; }
+  .title { margin: 2px 0 4px; font-size: 1.08rem; font-weight: 900; line-height: 1.3; color: var(--navy); display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; overflow-wrap: anywhere; }
+  .maker { margin: 0 0 6px; color: var(--muted); font-size: .9rem; font-weight: 700; }
+  .badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 10px; border-radius: 999px; font-size: .8rem; font-weight: 800; }
+  .desc { margin: 12px 0 0; color: #5b4a36; font-size: .92rem; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; overflow-wrap: anywhere; min-height: 2.9em; }
+  .new { position: absolute; top: 14px; right: 14px; padding: 3px 10px; border-radius: 999px; background: var(--orange); color: #fff; font-size: .72rem; font-weight: 900; letter-spacing: .04em; }
+  .new.upd { background: #6d5bd0; }
+  .actions { position: absolute; left: 14px; right: 14px; bottom: 14px; display: flex; gap: 8px; align-items: center; pointer-events: none; }
+  .open { display: inline-flex; align-items: center; min-height: 42px; padding: 0 18px; border-radius: 12px; background: var(--navy); color: #fff; font-weight: 900; font-size: .9rem; }
+  .card:hover .open { background: var(--navy-d); }
+  .btn2 { pointer-events: auto; min-height: 42px; padding: 0 12px; display: inline-flex; align-items: center; gap: 5px; border: 1px solid var(--line); border-radius: 12px; background: #fff; cursor: pointer; font-weight: 800; font-size: .88rem; color: #4a3b2a; }
+  .btn2:hover { border-color: var(--orange); }
+  .like { margin-left: auto; }
+  .like .num, .req .num { color: var(--orange-d); }
+  .like[aria-pressed="true"] { background: var(--orange); border-color: var(--orange); color: #fff; }
+  .like[aria-pressed="true"] .num { color: #fff; }
+  .like.pop .thumb { display: inline-block; animation: pop .4s ease; }
+  @keyframes pop { 0% { transform: scale(1) rotate(0); } 40% { transform: scale(1.35) rotate(-12deg); } 100% { transform: scale(1) rotate(0); } }
+
+  .skeleton { border-radius: 22px; min-height: 220px; border: 1px solid var(--line); background: linear-gradient(100deg, #efe5d0 30%, #f9f3e6 50%, #efe5d0 70%) 0 0 / 200% 100%; animation: shimmer 1.2s linear infinite; }
+  @keyframes shimmer { to { background-position: -200% 0; } }
+  .empty { grid-column: 1 / -1; text-align: center; padding: 56px 16px; color: var(--muted); font-weight: 700; background: var(--card); border: 1px dashed #d6c49f; border-radius: 22px; }
+  .empty b { display: block; font-size: 2rem; margin-bottom: 6px; }
+
+  footer { margin-top: 30px; text-align: center; color: var(--muted); font-size: .92rem; font-weight: 600; }
+  footer b { color: var(--navy); }
+
+  .toast { position: fixed; left: 50%; bottom: 24px; z-index: 90; transform: translate(-50%, 20px); max-width: calc(100vw - 32px); padding: 13px 20px; border-radius: 14px; background: var(--navy-d); color: #fff; font-weight: 700; font-size: .95rem; text-align: center; box-shadow: 0 10px 30px rgba(20, 30, 50, .35); opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+  /* 팝업 창 (업그레이드 요청, 관리자) */
+  dialog { border: 0; padding: 0; border-radius: 22px; background: var(--card); color: var(--text); box-shadow: 0 30px 80px rgba(20, 20, 30, .35); width: min(720px, calc(100vw - 24px)); max-height: calc(100vh - 32px); }
+  dialog::backdrop { background: rgba(30, 25, 15, .45); }
+  .dlg-head { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; gap: 10px; padding: 16px 20px; background: var(--card); border-bottom: 1px solid var(--line); }
+  .dlg-head h2 { margin: 0; font-size: 1.15rem; font-weight: 900; color: var(--navy); flex: 1; min-width: 0; overflow-wrap: anywhere; }
+  .x { border: 0; background: #efe3c9; width: 40px; height: 40px; border-radius: 12px; cursor: pointer; font-size: 1.1rem; font-weight: 900; }
+  .dlg-body { padding: 16px 20px 22px; }
+  .req-list { list-style: none; margin: 0 0 16px; padding: 0; display: grid; gap: 10px; }
+  .req-list li { padding: 12px 14px; border-radius: 14px; background: #fff; border: 1px solid var(--line); }
+  .req-list .t { margin: 0 0 6px; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .req-list .m { display: flex; gap: 8px; align-items: center; color: var(--muted); font-size: .82rem; font-weight: 700; }
+  .req-list .del { margin-left: auto; border: 0; background: none; color: #b33a2b; cursor: pointer; font-weight: 800; font-size: .82rem; }
+  .req-form textarea { width: 100%; min-height: 90px; resize: vertical; padding: 12px; border-radius: 14px; border: 1px solid var(--line); background: #fff; }
+  .req-form .row { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
+  .req-form .cnt { color: var(--muted); font-size: .85rem; }
+  .primary { border: 0; cursor: pointer; min-height: 42px; padding: 0 18px; border-radius: 12px; background: var(--orange); color: #fff; font-weight: 900; }
+  .primary:hover { background: var(--orange-d); }
+  .primary:disabled { opacity: .55; cursor: default; }
+  .secondary { border: 1px solid var(--line); cursor: pointer; min-height: 38px; padding: 0 14px; border-radius: 10px; background: #fff; font-weight: 800; }
+  .danger { color: #b33a2b; }
+  .muted { color: var(--muted); font-size: .88rem; }
+
+  /* 관리자 창 */
+  #admDlg { width: min(940px, calc(100vw - 24px)); }
+  .adm section { margin-bottom: 22px; }
+  .adm h3 { margin: 0 0 10px; font-size: 1.02rem; font-weight: 900; color: var(--navy); }
+  .adm .box { padding: 14px; border-radius: 14px; background: #fff; border: 1px solid var(--line); }
+  .adm .sync { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+  .adm .status { font-weight: 700; color: var(--muted); font-size: .9rem; }
+  .adm .rules { margin: 0; padding-left: 20px; font-size: .92rem; }
+  .adm .rules li { margin: 4px 0; }
+  .adm code { padding: 1px 6px; border-radius: 6px; background: #f3ead8; font-size: .9em; }
+  .adm table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+  .adm th { text-align: left; color: var(--muted); font-weight: 800; font-size: .8rem; padding: 6px 4px; border-bottom: 1px solid var(--line); }
+  .adm td { padding: 6px 4px; border-bottom: 1px solid #f0e6d2; vertical-align: middle; }
+  .adm input, .adm select { width: 100%; min-height: 36px; padding: 0 8px; border: 1px solid var(--line); border-radius: 8px; background: #fffdf8; }
+  .adm .no { width: 70px; } .adm .nm { width: 90px; }
+  .adm .act { white-space: nowrap; display: flex; gap: 6px; }
+  .adm tr.hid td { opacity: .55; }
+  .adm .tag { display: inline-block; padding: 1px 8px; border-radius: 999px; background: #eee; font-size: .75rem; font-weight: 800; }
+  .adm .scroll { overflow-x: auto; }
+  .adm .rej { display: grid; gap: 8px; }
+  .adm .rej .r { display: grid; grid-template-columns: 1fr 76px 96px auto; gap: 6px; align-items: center; padding: 10px; border-radius: 12px; background: #fff; border: 1px solid var(--line); }
+  .adm .rej .src { font-weight: 800; overflow-wrap: anywhere; font-size: .88rem; }
+  .adm .rej .src small { display: block; color: var(--muted); font-weight: 600; }
+
+  @media (max-width: 700px) {
+    .wrap { padding: 0 12px 24px; }
+    .bar { padding: 8px 12px; }
+    .brand { font-size: .98rem; }
+    .login { padding: 0 12px; font-size: .86rem; }
+    .hero { padding: 26px 20px; min-height: 0; border-radius: 22px; background-position: 70% center; }
+    .hero::before { background: linear-gradient(180deg, rgba(246,239,225,.9), rgba(246,239,225,.95)); }
+    .stat { flex: 1; padding: 8px 10px; gap: 6px; }
+    .stat strong { font-size: 1.05rem; }
+    .notice summary .hint { display: none; }
+    .notice ul { grid-template-columns: 1fr; padding: 0 10px 10px; }
+    .search { max-width: none; flex-basis: 100%; }
+    .sorts { margin-left: 0; width: 100%; }
+    .sort { flex: 1; padding: 0 6px; }
+    .grid { grid-template-columns: 1fr; gap: 12px; }
+    .icon { width: 72px; height: 72px; }
+    .btn2 .lbl { display: none; }
+    .adm .rej .r { grid-template-columns: 1fr 1fr; }
+    .adm .rej .src { grid-column: 1 / -1; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    .card:hover, .card:focus-within { transform: none; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="bar">
+    <p class="brand">🧭 <b>동신중</b> 사회과 웹앱 탐험관</p>
+    <button class="login" id="login" type="button" hidden>학교 계정 로그인</button>
+  </div>
+</header>
+
+<div class="wrap">
+  <section class="hero" aria-label="소개">
+    <h1>사회를 탐험하는,<br><em>우리가 만든 웹앱</em></h1>
+    <p>써 보고 추천하거나 업그레이드 아이디어를 남겨 주세요</p>
+    <div class="stats">
+      <div class="stat"><i>🧭</i><div><small>웹앱</small><strong id="statApps">·</strong></div></div>
+      <div class="stat accent"><i>👍</i><div><small>추천</small><strong id="statLikes">·</strong></div></div>
+      <div class="stat"><i>💡</i><div><small>업그레이드 요청</small><strong id="statReqs">·</strong></div></div>
+    </div>
+  </section>
+
+  <details class="notice" id="notice" open hidden>
+    <summary>⚠️ 다시 제출이 필요해요 <span class="count" id="noticeCount"></span><span class="hint">내 이름이 있는지 확인하세요</span></summary>
+    <p class="notice-lead">아래 파일은 웹앱으로 열 수 없어서 탐험관에 올라가지 않았어요. 고쳐서 제출 폴더에 다시 올리면 자동으로 사라집니다.</p>
+    <ul id="noticeList"></ul>
+  </details>
+
+  <nav class="cats" id="cats" aria-label="분류"></nav>
+  <div class="tools">
+    <input class="search" id="search" type="search" placeholder="앱 이름·이름·학번 검색" aria-label="웹앱 검색" autocomplete="off">
+    <div class="sorts" role="group" aria-label="정렬">
+      <button class="sort" type="button" data-sort="popular" aria-pressed="true">인기순</button>
+      <button class="sort" type="button" data-sort="recent" aria-pressed="false">최신순</button>
+      <button class="sort" type="button" data-sort="number" aria-pressed="false">학번순</button>
+    </div>
+  </div>
+  <main class="grid" id="grid" aria-live="polite"></main>
+  <footer id="footer"></footer>
+</div>
+
+<!-- 업그레이드 요청 창 -->
+<dialog id="reqDlg" aria-labelledby="reqTitle">
+  <div class="dlg-head"><h2 id="reqTitle">💡 업그레이드 요청</h2><button class="x" type="button" data-close aria-label="닫기">✕</button></div>
+  <div class="dlg-body">
+    <p class="muted" id="reqLead"></p>
+    <ul class="req-list" id="reqList"></ul>
+    <form class="req-form" id="reqForm">
+      <label for="reqText" class="muted">이 앱에 더해졌으면 하는 기능이나 고쳤으면 하는 점 (학교 계정 로그인 필요, 300자까지)</label>
+      <textarea id="reqText" maxlength="300" placeholder="예) 문제를 다 풀면 오답만 다시 풀 수 있게 해 주세요"></textarea>
+      <div class="row"><span class="cnt" id="reqCnt">0 / 300</span><button class="primary" id="reqSend" type="submit" style="margin-left:auto">요청 남기기</button></div>
+    </form>
+  </div>
+</dialog>
+
+<!-- 관리자 창 (F9) -->
+<dialog id="admDlg" aria-labelledby="admTitle">
+  <div class="dlg-head"><h2 id="admTitle">🛠️ 관리자 창</h2><span class="muted" id="admWho"></span><button class="x" type="button" data-close aria-label="닫기">✕</button></div>
+  <div class="dlg-body adm" id="admBody"></div>
+</dialog>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="./config.js"></script>
+<script type="module">
+const CFG = window.APP_CONFIG || {};
+const DOMAIN = String(CFG.allowedDomain || "").toLowerCase();
+const PLAY_BASE = String(CFG.playBase || "./");
+const LIKES = "socialLikes", REQS = "socialRequests"; // Firestore 컬렉션
+const FB_VER = "10.14.1";
+const NEW_MS = 72 * 60 * 60 * 1000;
+const FILE_RE = /^[0-9A-Za-z_-]+\.html$/;
+const CATS = {
+  geo:      { label: "지리",      emoji: "🗺️", bg: "#e3eef7", fg: "#1e4f7a" },
+  history:  { label: "역사",      emoji: "🏛️", bg: "#f6e3d3", fg: "#9a3d12" },
+  politics: { label: "정치·법",   emoji: "⚖️", bg: "#e6e8f5", fg: "#2e3a8c" },
+  economy:  { label: "경제",      emoji: "💰", bg: "#f4ecd0", fg: "#7a5b00" },
+  society:  { label: "사회·문화", emoji: "👥", bg: "#f7e1e4", fg: "#9b2c45" },
+  etc:      { label: "기타",      emoji: "✨", bg: "#ece6f5", fg: "#5b3f8c" },
+};
+const ICONS_PER_CAT = 3;
+
+const $ = (id) => document.getElementById(id);
+const grid = $("grid"), loginBtn = $("login"), toastEl = $("toast"), searchEl = $("search");
+
+const state = {
+  base: [],              // games.json 그대로
+  hiddenBase: [],        // games.json 의 숨긴 앱
+  rejectedBase: [],
+  overrides: {},         // 관리자 수정값 (Firestore socialAdmin/overrides)
+  apps: [],              // 수정값을 적용한 목록
+  rejected: [],
+  iconOf: new Map(),
+  loaded: false, loadError: false,
+  counts: new Map(), countsReady: false,
+  reqCounts: new Map(),
+  myLikes: new Set(),
+  user: null, isAdmin: false,
+  busy: new Set(),
+  sort: "popular", cat: "all", q: "",
+  likeAfterLogin: null,
+  reqApp: null,
+};
+let fb = null; // { auth, db, api }
+
+{
+  const b = document.createElement("b");
+  b.textContent = `@${DOMAIN}`;
+  $("footer").append("추천과 업그레이드 요청은 ", b, " 계정으로 할 수 있어요.");
+}
+
+// ---------- 도구 ----------
+let toastTimer;
+function toast(msg) {
+  toastEl.textContent = msg;
+  toastEl.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toastEl.classList.remove("show"), 3200);
+}
+function el(tag, cls, text) {
+  const n = document.createElement(tag);
+  if (cls) n.className = cls;
+  if (text != null) n.textContent = text;
+  return n;
+}
+const norm = (s) => String(s).replace(/\s+/g, "").toLowerCase();
+const countOf = (id) => state.counts.get(id) || 0;
+const time = (g) => Date.parse(g.addedAt) || 0;
+const catOf = (g) => (CATS[g.category] ? g.category : "etc");
+const isSchool = (u) => String(u?.email || "").toLowerCase().endsWith("@" + DOMAIN);
+function mask(name) {
+  const s = Array.from(String(name || "").replace(/\s+/g, ""));
+  if (s.length <= 1) return s.join("") || "학생";
+  if (s.length === 2) return s[0] + "○";
+  return s[0] + "○".repeat(s.length - 2) + s[s.length - 1];
+}
+function fmtDate(ts) {
+  const d = ts?.toDate ? ts.toDate() : null;
+  return d ? `${d.getMonth() + 1}월 ${d.getDate()}일` : "방금";
+}
+
+// ---------- 관리자 수정값 적용 (화면에 바로 반영) ----------
+function applyOverrides() {
+  const o = state.overrides;
+  const fix = (g) => {
+    const v = o[g.id];
+    if (!v) return { ...g };
+    const n = { ...g };
+    if (typeof v.title === "string" && v.title.trim()) n.title = v.title.trim();
+    if (typeof v.desc === "string") n.desc = v.desc.trim();
+    if (typeof v.name === "string" && v.name.trim()) n.name = v.name.trim();
+    if (/^\d{4}$/.test(String(v.studentNo ?? ""))) n.studentNo = String(v.studentNo);
+    if (CATS[v.category]) n.category = v.category;
+    return n;
+  };
+  state.apps = state.base.filter((g) => o[g.id]?.hide !== true).map(fix);
+  state.rejected = state.rejectedBase.filter((r) => o[`drive:${r.driveId}`]?.ignore !== true && !o[`drive:${r.driveId}`]?.studentNo);
+  const seen = {};
+  state.iconOf.clear();
+  [...state.apps].sort((a, b) => time(a) - time(b) || a.id.localeCompare(b.id)).forEach((g) => {
+    const k = catOf(g);
+    seen[k] = (seen[k] || 0) + 1;
+    state.iconOf.set(g.id, `${k}${((seen[k] - 1) % ICONS_PER_CAT) + 1}`);
+  });
+}
+
+// ---------- 정렬·메달 ----------
+function visibleApps() {
+  const q = norm(state.q);
+  let list = state.apps.filter((g) =>
+    (state.cat === "all" || catOf(g) === state.cat) &&
+    (!q || norm(g.title + g.name + g.studentNo + (g.desc || "") + CATS[catOf(g)].label).includes(q)));
+  if (state.sort === "recent") list.sort((a, b) => time(b) - time(a) || a.id.localeCompare(b.id));
+  else if (state.sort === "number") list.sort((a, b) => a.studentNo.localeCompare(b.studentNo) || a.id.localeCompare(b.id));
+  else list.sort((a, b) => countOf(b.id) - countOf(a.id) || time(b) - time(a) || a.id.localeCompare(b.id));
+  return list;
+}
+function medalMap() {
+  const top = [...new Set(state.apps.map((g) => countOf(g.id)).filter((n) => n >= 1))].sort((a, b) => b - a).slice(0, 3);
+  const icons = ["🥇", "🥈", "🥉"];
+  const map = new Map();
+  for (const g of state.apps) { const i = top.indexOf(countOf(g.id)); if (i >= 0) map.set(g.id, icons[i]); }
+  return map;
+}
+
+// ---------- 그리기 ----------
+function paintLike(btn, g) {
+  const liked = state.myLikes.has(g.id);
+  const has = state.counts.has(g.id);
+  const n = state.counts.get(g.id);
+  btn.setAttribute("aria-pressed", String(liked));
+  btn.replaceChildren(el("span", "thumb", "👍"), el("span", "lbl", "추천해요"));
+  let label = "";
+  if (!fb) label = "";
+  else if (!has) label = "·";
+  else if (n === null) label = "-";
+  else if (n > 0) label = String(n);
+  if (label) btn.append(el("span", "num", label));
+  btn.setAttribute("aria-label", `${g.name}의 앱 추천, 현재 ${n || 0}개`);
+}
+function paintReq(btn, g) {
+  const n = state.reqCounts.get(g.id) || 0;
+  btn.replaceChildren(el("span", null, "💡"), el("span", "lbl", "요청"));
+  if (n > 0) btn.append(el("span", "num", String(n)));
+  btn.setAttribute("aria-label", `${g.title} 업그레이드 요청 ${n}개 보기`);
+}
+function updateSummary() {
+  $("statApps").textContent = state.loaded && !state.loadError ? `${state.apps.length}개` : "·";
+  $("statLikes").textContent = state.countsReady ? `${state.apps.reduce((s, g) => s + countOf(g.id), 0)}개` : fb ? "·" : "-";
+  $("statReqs").textContent = state.countsReady ? `${state.apps.reduce((s, g) => s + (state.reqCounts.get(g.id) || 0), 0)}개` : fb ? "·" : "-";
+}
+function renderCats() {
+  const counts = {};
+  for (const g of state.apps) counts[catOf(g)] = (counts[catOf(g)] || 0) + 1;
+  if (state.cat !== "all" && !counts[state.cat]) state.cat = "all";
+  const chip = (key, text, n) => {
+    const b = el("button", "cat");
+    b.type = "button";
+    b.setAttribute("aria-pressed", String(state.cat === key));
+    b.append(text, el("span", "n", String(n)));
+    b.addEventListener("click", () => { state.cat = key; renderCats(); render(); });
+    return b;
+  };
+  const chips = [chip("all", "전체", state.apps.length)];
+  for (const [key, c] of Object.entries(CATS)) if (counts[key]) chips.push(chip(key, `${c.emoji} ${c.label}`, counts[key]));
+  $("cats").replaceChildren(...chips);
+}
+function renderNotice() {
+  $("notice").hidden = state.rejected.length === 0;
+  $("noticeCount").textContent = `${state.rejected.length}건`;
+  $("noticeList").replaceChildren(...state.rejected.map((r) => {
+    const li = el("li");
+    li.append(el("strong", "who", r.who), el("span", "why", r.reason), el("p", "fix", r.fix));
+    return li;
+  }));
+}
+function emptyBox(icon, text) { const p = el("p", "empty"); p.append(el("b", null, icon), text); return p; }
+function iconEl(g) {
+  const box = el("div", "icon");
+  box.setAttribute("aria-hidden", "true");
+  const img = el("img");
+  img.src = `./assets/${state.iconOf.get(g.id) || "etc1"}.jpg`;
+  img.alt = "";
+  img.loading = "lazy";
+  img.addEventListener("error", () => img.replaceWith(el("div", "fallback", CATS[catOf(g)].emoji)), { once: true });
+  box.append(img);
+  return box;
+}
+function render() {
+  updateSummary();
+  if (!state.loaded) { grid.replaceChildren(...Array.from({ length: 6 }, () => el("div", "skeleton"))); return; }
+  if (state.loadError) { grid.replaceChildren(emptyBox("⚠️", "웹앱 목록을 불러오지 못했어요. 새로고침해 주세요.")); return; }
+  if (state.apps.length === 0) { grid.replaceChildren(emptyBox("🧭", "아직 올라온 웹앱이 없어요. 첫 번째 탐험가를 기다리는 중!")); return; }
+  const list = visibleApps();
+  if (list.length === 0) { grid.replaceChildren(emptyBox("🔍", state.q.trim() ? `'${state.q.trim()}'에 맞는 웹앱이 없어요` : "이 분류에는 아직 웹앱이 없어요")); return; }
+
+  const medals = medalMap();
+  const now = Date.now();
+  grid.replaceChildren(...list.map((g) => {
+    const c = CATS[catOf(g)];
+    const card = el("article", "card");
+    const link = el("a", "card-link");
+    link.href = PLAY_BASE + g.file;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    link.setAttribute("aria-label", `${g.title} — ${g.studentNo} ${g.name}, ${c.label} (새 창에서 열림)`);
+    const icon = iconEl(g);
+    if (medals.has(g.id)) icon.append(el("span", "medal", medals.get(g.id)));
+    const meta = el("div", "meta");
+    const badge = el("span", "badge", `${c.emoji} ${c.label}`);
+    badge.style.background = c.bg; badge.style.color = c.fg;
+    meta.append(el("h2", "title", g.title), el("p", "maker", `${g.studentNo} ${g.name}`), badge);
+    const top = el("div", "top");
+    top.append(icon, meta);
+    link.append(top, el("p", "desc", g.desc || `${c.emoji} ${c.label}을 탐험하는 웹앱`));
+    card.append(link);
+
+    const upd = Date.parse(g.updatedAt) || 0;
+    if (upd - time(g) > 60000 && now - upd < NEW_MS) card.append(el("span", "new upd", "UPDATE"));
+    else if (now - time(g) < NEW_MS) card.append(el("span", "new", "NEW"));
+
+    const actions = el("div", "actions");
+    actions.append(el("span", "open", "열기 ↗"));
+    const like = el("button", "btn2 like");
+    like.type = "button"; like.dataset.id = g.id;
+    paintLike(like, g);
+    like.addEventListener("click", () => onLike(g));
+    const req = el("button", "btn2 req");
+    req.type = "button"; req.dataset.id = g.id;
+    paintReq(req, g);
+    req.addEventListener("click", () => openRequests(g));
+    actions.append(like, req);
+    card.append(actions);
+    return card;
+  }));
+}
+function repaintLike(g) {
+  const btn = grid.querySelector(`.like[data-id="${CSS.escape(g.id)}"]`);
+  if (btn) paintLike(btn, g);
+  updateSummary();
+  return btn;
+}
+function repaintReq(g) {
+  const btn = grid.querySelector(`.req[data-id="${CSS.escape(g.id)}"]`);
+  if (btn) paintReq(btn, g);
+  updateSummary();
+}
+function refreshAll() { applyOverrides(); renderCats(); renderNotice(); render(); }
+
+// ---------- 로그인 ----------
+async function login({ admin = false } = {}) {
+  const { auth, api } = fb;
+  const provider = new api.GoogleAuthProvider();
+  provider.setCustomParameters(admin ? { prompt: "select_account" } : { hd: DOMAIN, prompt: "select_account" });
+  try {
+    await api.signInWithPopup(auth, provider);
+    return true;
+  } catch (e) {
+    state.likeAfterLogin = null;
+    if (e.code === "auth/popup-blocked") toast("팝업을 허용한 뒤 다시 눌러 주세요");
+    else if (e.code !== "auth/popup-closed-by-user" && e.code !== "auth/cancelled-popup-request") {
+      console.warn("로그인 실패", e);
+      toast("로그인하지 못했어요. 다시 시도해 주세요");
+    }
+    return false;
+  }
+}
+async function checkAdmin() {
+  if (!state.user) return false;
+  try {
+    await fb.api.getDoc(fb.api.doc(fb.db, "socialAdminCheck", "ping"));
+    return true;
+  } catch { return false; }
+}
+function paintLogin() {
+  loginBtn.hidden = !fb;
+  loginBtn.classList.toggle("in", Boolean(state.user));
+  loginBtn.textContent = state.user ? `${state.user.displayName || "로그인됨"}${state.isAdmin ? " (관리자)" : ""} · 로그아웃` : "학교 계정 로그인";
+}
+
+// ---------- 추천 ----------
+async function setLike(g, on) {
+  if (state.busy.has(g.id)) return;
+  const { db, api } = fb;
+  const uid = state.user.uid;
+  const ref = api.doc(db, LIKES, `${g.id}_${uid}`);
+  const before = state.counts.get(g.id);
+  state.busy.add(g.id);
+  if (on) state.myLikes.add(g.id); else state.myLikes.delete(g.id);
+  if (typeof before === "number") state.counts.set(g.id, Math.max(0, before + (on ? 1 : -1)));
+  const btn = repaintLike(g);
+  if (on && btn && !matchMedia("(prefers-reduced-motion: reduce)").matches) { btn.classList.remove("pop"); void btn.offsetWidth; btn.classList.add("pop"); }
+  try {
+    if (on) await api.setDoc(ref, { appId: g.id, uid, createdAt: api.serverTimestamp() });
+    else await api.deleteDoc(ref);
+  } catch (e) {
+    console.warn("추천 저장 실패", e);
+    if (on) state.myLikes.delete(g.id); else state.myLikes.add(g.id);
+    if (before !== undefined) state.counts.set(g.id, before);
+    repaintLike(g);
+    toast("저장하지 못했어요. 다시 눌러 주세요");
+  } finally { state.busy.delete(g.id); }
+}
+async function onLike(g) {
+  if (!fb) { toast("추천 기능 준비 중이에요"); return; }
+  if (!state.user) { state.likeAfterLogin = g.id; await login(); return; }
+  if (!isSchool(state.user)) { toast(`추천은 학교 계정(@${DOMAIN})으로 할 수 있어요`); return; }
+  await setLike(g, !state.myLikes.has(g.id));
+}
+async function loadCounts() {
+  if (!fb || !state.loaded) return;
+  const { db, api } = fb;
+  const ids = state.base.map((g) => g.id);
+  const q = (col, id) => api.getCountFromServer(api.query(api.collection(db, col), api.where("appId", "==", id)));
+  const [likes, reqs] = await Promise.all([
+    Promise.allSettled(ids.map((id) => q(LIKES, id))),
+    Promise.allSettled(ids.map((id) => q(REQS, id))),
+  ]);
+  let failed = false;
+  ids.forEach((id, i) => {
+    if (!state.busy.has(id)) {
+      if (likes[i].status === "fulfilled") state.counts.set(id, likes[i].value.data().count);
+      else { state.counts.set(id, null); failed = true; }
+    }
+    if (reqs[i].status === "fulfilled") state.reqCounts.set(id, reqs[i].value.data().count);
+  });
+  state.countsReady = true;
+  if (failed) toast("추천 수를 불러오지 못했어요");
+  render();
+}
+async function loadMyLikes() {
+  const { db, api } = fb;
+  const uid = state.user.uid;
+  try {
+    const snap = await api.getDocs(api.query(api.collection(db, LIKES), api.where("uid", "==", uid)));
+    if (state.user?.uid !== uid) return;
+    state.myLikes = new Set(snap.docs.map((d) => d.data().appId));
+  } catch (e) { console.warn("내 추천 읽기 실패", e); }
+  render();
+  const pending = state.likeAfterLogin;
+  state.likeAfterLogin = null;
+  if (pending && isSchool(state.user) && !state.myLikes.has(pending)) {
+    const g = state.apps.find((x) => x.id === pending);
+    if (g) await setLike(g, true);
+  }
+}
+
+// ---------- 업그레이드 요청 ----------
+const reqDlg = $("reqDlg");
+async function openRequests(g) {
+  if (!fb) { toast("요청 기능 준비 중이에요"); return; }
+  state.reqApp = g;
+  $("reqTitle").textContent = `💡 ${g.title}`;
+  $("reqLead").textContent = `${g.studentNo} ${g.name}님의 앱에 남겨진 업그레이드 요청이에요.`;
+  $("reqText").value = "";
+  $("reqCnt").textContent = "0 / 300";
+  $("reqList").replaceChildren(el("li", "muted", "불러오는 중…"));
+  if (!reqDlg.open) reqDlg.showModal();
+  await loadRequests(g);
+}
+async function loadRequests(g) {
+  const { db, api } = fb;
+  try {
+    const snap = await api.getDocs(api.query(api.collection(db, REQS), api.where("appId", "==", g.id)));
+    const docs = snap.docs.map((d) => ({ id: d.id, ...d.data() }))
+      .sort((a, b) => (b.createdAt?.toMillis?.() || 0) - (a.createdAt?.toMillis?.() || 0));
+    state.reqCounts.set(g.id, docs.length);
+    repaintReq(g);
+    if (!docs.length) { $("reqList").replaceChildren(el("li", "muted", "아직 요청이 없어요. 첫 아이디어를 남겨 주세요!")); return; }
+    $("reqList").replaceChildren(...docs.map((r) => {
+      const li = el("li");
+      const m = el("div", "m");
+      m.append(el("span", null, `✍️ ${r.author || "학생"}`), el("span", null, fmtDate(r.createdAt)));
+      if (state.user && (r.uid === state.user.uid || state.isAdmin)) {
+        const del = el("button", "del", "지우기");
+        del.type = "button";
+        del.addEventListener("click", async () => {
+          if (!confirm("이 요청을 지울까요?")) return;
+          try { await api.deleteDoc(api.doc(db, REQS, r.id)); toast("지웠어요"); await loadRequests(g); }
+          catch (e) { console.warn(e); toast("지우지 못했어요"); }
+        });
+        m.append(del);
+      }
+      li.append(el("p", "t", r.text), m);
+      return li;
+    }));
+  } catch (e) {
+    console.warn("요청 읽기 실패", e);
+    $("reqList").replaceChildren(el("li", "muted", "요청을 불러오지 못했어요."));
+  }
+}
+$("reqText").addEventListener("input", (e) => { $("reqCnt").textContent = `${e.target.value.length} / 300`; });
+$("reqForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const g = state.reqApp;
+  const text = $("reqText").value.trim();
+  if (!g) return;
+  if (text.length < 2) { toast("두 글자 이상 적어 주세요"); return; }
+  if (!state.user) { if (!(await login())) return; }
+  if (!isSchool(state.user)) { toast(`요청은 학교 계정(@${DOMAIN})으로 남길 수 있어요`); return; }
+  const { db, api } = fb;
+  $("reqSend").disabled = true;
+  try {
+    await api.addDoc(api.collection(db, REQS), {
+      appId: g.id, uid: state.user.uid, author: mask(state.user.displayName), text, createdAt: api.serverTimestamp(),
+    });
+    $("reqText").value = ""; $("reqCnt").textContent = "0 / 300";
+    toast("요청을 남겼어요. 고마워요!");
+    await loadRequests(g);
+  } catch (err) { console.warn(err); toast("저장하지 못했어요. 다시 시도해 주세요"); }
+  finally { $("reqSend").disabled = false; }
+});
+document.querySelectorAll("dialog [data-close]").forEach((b) => b.addEventListener("click", () => b.closest("dialog").close()));
+
+// ---------- 관리자 창 (F9) ----------
+const admDlg = $("admDlg"), admBody = $("admBody");
+async function openAdmin() {
+  if (!fb) { toast("관리자 기능을 불러오는 중이에요"); return; }
+  if (!state.user) { if (!(await login({ admin: true }))) return; }
+  state.isAdmin = await checkAdmin();
+  paintLogin();
+  if (!state.isAdmin) { toast("관리자 계정이 아니에요. 관리자 계정으로 다시 로그인해 주세요"); return; }
+  $("admWho").textContent = state.user.email;
+  renderAdmin();
+  if (!admDlg.open) admDlg.showModal();
+  refreshSyncStatus();
+}
+async function apiCall(method, body) {
+  const token = await state.user.getIdToken();
+  const res = await fetch("./api/admin", {
+    method,
+    headers: { Authorization: `Bearer ${token}`, ...(body ? { "Content-Type": "application/json" } : {}) },
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || `오류 ${res.status}`);
+  return data;
+}
+async function saveOverrides(next, msg) {
+  const { db, api } = fb;
+  await api.setDoc(api.doc(db, "socialAdmin", "overrides"), {
+    json: JSON.stringify(next), updatedAt: api.serverTimestamp(), updatedBy: state.user.displayName || "관리자",
+  });
+  state.overrides = next;
+  refreshAll();
+  renderAdmin();
+  if (msg) toast(msg);
+}
+function editOverride(key, patch, msg) {
+  const next = structuredClone(state.overrides);
+  const cur = { ...(next[key] || {}), ...patch };
+  for (const k of Object.keys(cur)) if (cur[k] === undefined || cur[k] === "") delete cur[k];
+  if (Object.keys(cur).length) next[key] = cur; else delete next[key];
+  return saveOverrides(next, msg).catch((e) => { console.warn(e); toast("저장하지 못했어요 (관리자 권한 확인)"); });
+}
+let syncTimer = null;
+async function refreshSyncStatus() {
+  const s = admBody.querySelector("#syncStatus");
+  if (!s) return;
+  try {
+    const { runs } = await apiCall("GET");
+    const r = runs[0];
+    if (!r) { s.textContent = "아직 실행 기록이 없어요"; return; }
+    const when = new Date(r.createdAt).toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit" });
+    const how = r.event === "workflow_dispatch" ? "바로 반영" : r.event === "schedule" ? "자동(10분마다)" : "변경";
+    if (r.status !== "completed") {
+      s.textContent = `⏳ ${when} ${how} 실행 중… (보통 1분 안팎)`;
+      clearTimeout(syncTimer); syncTimer = setTimeout(refreshSyncStatus, 5000);
+    } else {
+      s.textContent = r.conclusion === "success" ? `✅ ${when} ${how} 완료 — 1분쯤 뒤 새로고침하면 보여요` : `⚠️ ${when} ${how} 실패 (${r.conclusion})`;
+    }
+  } catch (e) { s.textContent = `상태를 확인하지 못했어요: ${e.message}`; }
+}
+function renderAdmin() {
+  const o = state.overrides;
+  const sec = (title, ...kids) => { const s = el("section"); s.append(el("h3", null, title), ...kids); return s; };
+
+  // 1) 바로 반영
+  const syncBox = el("div", "box sync");
+  const syncBtn = el("button", "primary", "⚡ 바로 반영");
+  syncBtn.type = "button";
+  const status = el("span", "status", "상태 확인 중…");
+  status.id = "syncStatus";
+  syncBtn.addEventListener("click", async () => {
+    syncBtn.disabled = true;
+    try { await apiCall("POST", { op: "sync" }); toast("드라이브 폴더를 지금 확인하고 있어요"); setTimeout(refreshSyncStatus, 3000); }
+    catch (e) { toast(e.message); }
+    finally { setTimeout(() => { syncBtn.disabled = false; }, 4000); }
+  });
+  syncBox.append(syncBtn, status, el("p", "muted", "학생이 제출 폴더에 새로 올린 파일을 지금 바로 가져옵니다. 누르지 않아도 10분마다 자동으로 확인해요. 아래 숨기기·이름 바꾸기는 누르는 즉시 화면에 반영됩니다."));
+
+  // 2) 파일 이름 규칙
+  const rules = el("ul", "rules");
+  const li = (...parts) => { const l = el("li"); parts.forEach((p) => l.append(typeof p === "string" ? document.createTextNode(p) : p)); return l; };
+  const code = (t) => el("code", null, t);
+  rules.append(
+    li("파일 이름 끝이 ", code("학번이름.html"), " 이어야 올라갑니다. 예) ", code("세계수도퀴즈 - 3115홍길동.html")),
+    li("학번은 4자리(학년 1 + 반 1 + 번호 2). 이름 사이 띄어쓰기는 괜찮아요. 예) ", code("3108염 성 빈.html"), " → 3108 염성빈"),
+    li("구글 설문으로 제출하면 원래 파일 이름 뒤에 ", code(" - 응답자이름"), "이 붙으므로, 계정 이름이 '학번이름'이면 자동으로 맞춰집니다."),
+    li("AI와 대화한 화면을 통째로 저장한 파일(제목에 'Google Gemini' 등)은 웹앱이 아니라서 올라가지 않아요."),
+    li("고친 버전을 다시 내면 새 파일만 보이고 추천·요청은 그대로 유지돼요. 서로 다른 앱은 여러 개 내도 됩니다(", code("3115-2"), " …)."),
+    li("규칙에 안 맞는 파일은 아래 '올라가지 않은 파일'에서 학번·이름을 직접 정해 주면 올릴 수 있어요."),
+  );
+  const rulesBox = el("div", "box"); rulesBox.append(rules);
+
+  // 3) 올라가지 않은 파일
+  const rejBox = el("div", "rej");
+  const pending = state.rejectedBase.filter((r) => o[`drive:${r.driveId}`]?.ignore !== true);
+  if (!pending.length) rejBox.append(el("p", "muted", "올라가지 않은 파일이 없어요."));
+  for (const r of pending) {
+    const ov = o[`drive:${r.driveId}`] || {};
+    const row = el("div", "r");
+    const src = el("div", "src", r.sourceName || r.who);
+    src.append(el("small", null, ov.studentNo ? `게시 예정: ${ov.studentNo} ${ov.name} (바로 반영을 누르면 올라가요)` : r.reason));
+    const no = el("input"); no.placeholder = "학번"; no.inputMode = "numeric"; no.maxLength = 4; no.value = ov.studentNo || "";
+    const nm = el("input"); nm.placeholder = "이름"; nm.maxLength = 10; nm.value = ov.name || "";
+    const act = el("div", "act");
+    const pub = el("button", "secondary", "게시하기"); pub.type = "button";
+    pub.addEventListener("click", () => {
+      if (!/^\d{4}$/.test(no.value.trim()) || !nm.value.trim()) { toast("학번 4자리와 이름을 적어 주세요"); return; }
+      editOverride(`drive:${r.driveId}`, { studentNo: no.value.trim(), name: nm.value.trim().replace(/\s+/g, ""), ignore: undefined }, "저장했어요. '바로 반영'을 누르면 올라가요");
+    });
+    const ign = el("button", "secondary danger", "목록에서 지우기"); ign.type = "button";
+    ign.addEventListener("click", () => editOverride(`drive:${r.driveId}`, { ignore: true }, "'다시 제출' 목록에서 지웠어요"));
+    act.append(pub, ign);
+    row.append(src, no, nm, act);
+    rejBox.append(row);
+  }
+  const ignored = state.rejectedBase.filter((r) => o[`drive:${r.driveId}`]?.ignore === true);
+  if (ignored.length) {
+    const p = el("p", "muted", `목록에서 지운 파일 ${ignored.length}개 — `);
+    const undo = el("button", "secondary", "모두 다시 보이기"); undo.type = "button";
+    undo.addEventListener("click", () => {
+      const next = structuredClone(o);
+      ignored.forEach((r) => { if (next[`drive:${r.driveId}`]) { delete next[`drive:${r.driveId}`].ignore; if (!Object.keys(next[`drive:${r.driveId}`]).length) delete next[`drive:${r.driveId}`]; } });
+      saveOverrides(next, "다시 보이게 했어요");
+    });
+    p.append(undo); rejBox.append(p);
+  }
+
+  // 4) 웹앱 목록 (삭제=숨기기, 이름 바꾸기)
+  const table = el("table");
+  const thead = el("thead"); const hr = el("tr");
+  ["학번", "이름", "앱 제목", "분류", ""].forEach((t) => hr.append(el("th", null, t)));
+  thead.append(hr); table.append(thead);
+  const tbody = el("tbody");
+  const all = [...state.base.map((g) => ({ g, hidden: o[g.id]?.hide === true })), ...state.hiddenBase.map((g) => ({ g, hidden: true, removed: o[g.id]?.hide === true }))]
+    .sort((a, b) => a.g.studentNo.localeCompare(b.g.studentNo) || a.g.id.localeCompare(b.g.id));
+  if (!all.length) { const tr = el("tr"); const td = el("td", "muted", "아직 올라온 웹앱이 없어요."); td.colSpan = 5; tr.append(td); tbody.append(tr); }
+  for (const { g, hidden } of all) {
+    const v = o[g.id] || {};
+    const tr = el("tr"); if (hidden) tr.className = "hid";
+    const no = el("input", "no"); no.value = v.studentNo || g.studentNo; no.maxLength = 4; no.inputMode = "numeric";
+    const nm = el("input", "nm"); nm.value = v.name || g.name; nm.maxLength = 10;
+    const ti = el("input"); ti.value = v.title || g.title; ti.maxLength = 60;
+    const ca = el("select");
+    for (const [k, c] of Object.entries(CATS)) { const op = el("option", null, `${c.emoji} ${c.label}`); op.value = k; ca.append(op); }
+    ca.value = CATS[v.category] ? v.category : catOf(g);
+    const act = el("td", "act");
+    const save = el("button", "secondary", "저장"); save.type = "button";
+    save.addEventListener("click", () => {
+      if (!/^\d{4}$/.test(no.value.trim())) { toast("학번은 4자리 숫자예요"); return; }
+      editOverride(g.id, {
+        studentNo: no.value.trim() !== g.studentNo ? no.value.trim() : undefined,
+        name: nm.value.trim() && nm.value.trim() !== g.name ? nm.value.trim() : undefined,
+        title: ti.value.trim() && ti.value.trim() !== g.title ? ti.value.trim() : undefined,
+        category: ca.value !== g.category ? ca.value : undefined,
+      }, "바꿨어요. 화면에 바로 반영됐어요");
+    });
+    const tog = el("button", hidden ? "secondary" : "secondary danger", hidden ? "되살리기" : "삭제"); tog.type = "button";
+    tog.addEventListener("click", () => {
+      if (!hidden && !confirm(`'${g.title}'을(를) 탐험관에서 내릴까요?\n(드라이브 파일과 추천 기록은 그대로 남고, 언제든 되살릴 수 있어요)`)) return;
+      editOverride(g.id, { hide: hidden ? undefined : true }, hidden ? "되살렸어요. 파일이 다시 보이려면 '바로 반영'을 눌러 주세요" : "탐험관에서 내렸어요");
+    });
+    const open = el("a", "secondary", "열기"); open.href = PLAY_BASE + (g.file || `${g.id}.html`); open.target = "_blank"; open.rel = "noopener noreferrer";
+    open.style.display = "inline-flex"; open.style.alignItems = "center"; open.style.textDecoration = "none";
+    act.append(save, tog);
+    if (!hidden) act.append(open);
+    const cell = (x) => { const td = el("td"); td.append(x); return td; };
+    const tiCell = cell(ti);
+    if (hidden) tiCell.append(el("span", "tag", "내림"));
+    tr.append(cell(no), cell(nm), tiCell, cell(ca), act);
+    tbody.append(tr);
+  }
+  table.append(tbody);
+  const scroll = el("div", "scroll"); scroll.append(table);
+
+  // 5) 업그레이드 요청 관리
+  const reqBox = el("div", "box");
+  const reqBtn = el("button", "secondary", "최근 요청 불러오기"); reqBtn.type = "button";
+  const reqList = el("ul", "req-list");
+  reqBtn.addEventListener("click", async () => {
+    const { db, api } = fb;
+    try {
+      const snap = await api.getDocs(api.query(api.collection(db, REQS), api.orderBy("createdAt", "desc"), api.limit(50)));
+      const titles = new Map(state.base.map((g) => [g.id, `${g.studentNo} ${g.name} · ${g.title}`]));
+      reqList.replaceChildren(...(snap.docs.length ? snap.docs.map((d) => {
+        const r = d.data();
+        const item = el("li");
+        const m = el("div", "m");
+        m.append(el("span", null, titles.get(r.appId) || r.appId), el("span", null, `${r.author || ""} · ${fmtDate(r.createdAt)}`));
+        const del = el("button", "del", "지우기"); del.type = "button";
+        del.addEventListener("click", async () => {
+          if (!confirm("이 요청을 지울까요?")) return;
+          try { await api.deleteDoc(api.doc(db, REQS, d.id)); item.remove(); toast("지웠어요"); } catch (e) { console.warn(e); toast("지우지 못했어요"); }
+        });
+        m.append(del);
+        item.append(el("p", "t", r.text), m);
+        return item;
+      }) : [el("li", "muted", "요청이 없어요.")]));
+    } catch (e) { console.warn(e); toast("요청을 불러오지 못했어요"); }
+  });
+  reqBox.append(reqBtn, reqList);
+
+  admBody.replaceChildren(
+    sec("⚡ 바로 반영", syncBox),
+    sec("📝 파일 이름 규칙 (학생 안내용)", rulesBox),
+    sec(`📂 올라가지 않은 파일 (${pending.length})`, rejBox),
+    sec(`🧭 웹앱 목록 — 이름 바꾸기·삭제 (${all.length})`, scroll),
+    sec("💡 업그레이드 요청 관리", reqBox),
+  );
+}
+document.addEventListener("keydown", (e) => {
+  if (e.key === "F9") { e.preventDefault(); openAdmin(); }
+});
+if (location.hash === "#admin") setTimeout(openAdmin, 800); // F9 가 없는 기기(크롬북 등): 주소 끝에 #admin
+// 내 컴퓨터(localhost)에서 화면 모양만 확인하는 용도. 실제 저장·반영은 로그인 없이는 서버·보안 규칙이 막는다
+if (location.hostname === "localhost" && location.hash === "#admin-preview") {
+  setTimeout(() => { $("admWho").textContent = "미리보기"; renderAdmin(); admDlg.showModal(); }, 1500);
+}
+
+// ---------- Firebase ----------
+async function loadOverrides() {
+  try {
+    const snap = await fb.api.getDoc(fb.api.doc(fb.db, "socialAdmin", "overrides"));
+    const text = snap.exists() ? snap.data().json : "";
+    state.overrides = text ? JSON.parse(text) : {};
+  } catch (e) { console.warn("관리자 수정값 읽기 실패", e); }
+  refreshAll();
+}
+async function initFirebase() {
+  if (!CFG.firebase || !CFG.firebase.apiKey) return;
+  try {
+    const base = `https://www.gstatic.com/firebasejs/${FB_VER}/`;
+    const [appM, authM, fsM] = await Promise.all([import(base + "firebase-app.js"), import(base + "firebase-auth.js"), import(base + "firebase-firestore.js")]);
+    const app = appM.initializeApp(CFG.firebase);
+    fb = { auth: authM.getAuth(app), db: fsM.getFirestore(app), api: { ...authM, ...fsM } };
+  } catch (e) { console.warn("Firebase 를 불러오지 못했어요", e); fb = null; return; }
+  paintLogin();
+  render();
+  fb.api.onAuthStateChanged(fb.auth, async (user) => {
+    state.user = user;
+    state.isAdmin = user ? await checkAdmin() : false;
+    if (user && !isSchool(user) && !state.isAdmin) {
+      state.likeAfterLogin = null;
+      await fb.api.signOut(fb.auth);
+      toast(`학교 계정(@${DOMAIN})으로 로그인해 주세요`);
+      return;
+    }
+    paintLogin();
+    if (user && isSchool(user)) await loadMyLikes();
+    else { state.myLikes = new Set(); render(); }
+    if (reqDlg.open && state.reqApp) loadRequests(state.reqApp);
+  });
+}
+
+// ---------- 시작 ----------
+try { const saved = localStorage.getItem("social.sort"); if (["popular", "recent", "number"].includes(saved)) state.sort = saved; } catch {}
+const sortBtns = [...document.querySelectorAll(".sort")];
+const paintSort = () => sortBtns.forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.sort === state.sort)));
+sortBtns.forEach((b) => b.addEventListener("click", () => {
+  state.sort = b.dataset.sort;
+  try { localStorage.setItem("social.sort", state.sort); } catch {}
+  paintSort(); render();
+}));
+paintSort();
+searchEl.addEventListener("input", () => { state.q = searchEl.value; render(); });
+loginBtn.addEventListener("click", () => { if (!fb) return; if (state.user) fb.api.signOut(fb.auth); else login(); });
+
+render();
+const fbReady = initFirebase();
+try {
+  const res = await fetch("./games.json", { cache: "no-store" });
+  if (!res.ok) throw new Error(String(res.status));
+  const data = await res.json();
+  const tidy = (g) => ({ ...g, title: String(g.title || ""), name: String(g.name || ""), studentNo: String(g.studentNo || ""), desc: String(g.desc || ""), category: String(g.category || "etc") });
+  state.base = (Array.isArray(data.games) ? data.games : []).filter((g) => g && typeof g.id === "string" && FILE_RE.test(String(g.file))).map(tidy);
+  state.hiddenBase = (Array.isArray(data.hidden) ? data.hidden : []).filter((g) => g && typeof g.id === "string").map(tidy);
+  state.rejectedBase = (Array.isArray(data.rejected) ? data.rejected : []).filter((r) => r && r.who)
+    .map((r) => ({ who: String(r.who), reason: String(r.reason || ""), fix: String(r.fix || ""), driveId: String(r.driveId || ""), sourceName: String(r.sourceName || "") }));
+} catch (e) {
+  if (!(e instanceof Error && e.message === "404")) console.warn("games.json 읽기 실패", e);
+  if (!(e instanceof Error && e.message === "404")) state.loadError = true; // 아직 한 번도 동기화 안 됨(404)은 빈 목록
+}
+state.loaded = true;
+refreshAll();
+await fbReady;
+if (fb) { await loadOverrides(); loadCounts(); }
+</script>
+</body>
+</html>

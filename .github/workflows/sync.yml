@@ -1,0 +1,41 @@
+name: 사회과 웹앱 드라이브 동기화
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"   # 10분마다 (GitHub 사정에 따라 늦어질 수 있음)
+  workflow_dispatch:          # Actions 탭의 "Run workflow" 버튼
+  push:
+    branches: [main]
+    paths: ["sync.config.json", "inbox/**", "scripts/sync.mjs"]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: 드라이브에서 게임 가져오기
+        run: node scripts/sync.mjs
+      - name: 바뀐 것이 있으면 커밋
+        run: |
+          git add -A play site/games.json
+          if [ -f sync-report.json ]; then git add sync-report.json; fi
+          if git diff --cached --quiet; then
+            echo "변경 없음"
+            exit 0
+          fi
+          git config user.name "social-sync-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "사회과 웹앱 동기화: $(date -u +%Y-%m-%dT%H:%MZ)"
+          git pull --rebase origin main
+          git push origin HEAD:main
