@@ -1,20 +1,35 @@
 {
-  "updatedAt": "2026-11-26T05:04:44.657Z",
+  "updatedAt": "2026-11-26T06:56:25.360Z",
   "games": [
     {
-      "id": "3300",
-      "studentNo": "3300",
-      "name": "홍길동",
-      "title": "피카츄와 함께하는 8급 한자 대모험",
-      "desc": "~ 전기 에너지를 100% 모아 악몽을 물리치자! ~",
+      "id": "3203",
+      "studentNo": "3203",
+      "name": "박건",
+      "title": "사회 스피드 제시어 배틀 (중3 사회 & 세계 지리)",
+      "desc": "세계 여러 나라, 수도, 화폐 등 친숙한 주제 위주",
       "category": "geo",
-      "file": "3300.html",
-      "driveId": "1VFEbdv1FkHfVv2u7tOulO_gRkjnmR1Cn",
-      "sourceName": "피카츄_8급한자_게임 - 교사박동배.html",
-      "hash": "78b6bce54410b031",
-      "size": 114747,
-      "addedAt": "2026-11-26T05:04:44.657Z",
-      "updatedAt": "2026-11-26T05:04:44.657Z"
+      "file": "3203.html",
+      "driveId": "1_8XJjOzVEnFkv51BbSqRnah4Pu5RtQ2E",
+      "sourceName": "스피드 제시어 퀴즈 - 3203박건.html",
+      "hash": "9d9eee6ca1949c87",
+      "size": 68105,
+      "addedAt": "2026-11-26T06:56:25.360Z",
+      "updatedAt": "2026-11-26T06:56:25.360Z"
+    },
+    {
+      "id": "3212",
+      "studentNo": "3212",
+      "name": "전성준",
+      "title": "시장의 신 : 편의점 & 글로벌 무역 타이쿤",
+      "desc": "중3 2학기 사회 완벽 정복 · 수요와 공급 · 기회비용 · 환율 · 물가와 금리",
+      "category": "economy",
+      "file": "3212.html",
+      "driveId": "1SPB69BkPmcfUUmwgqzEw7B5PO8m81Q3A",
+      "sourceName": "사회게임 - 3212전성준.html",
+      "hash": "77d8fa9bf1412e5c",
+      "size": 64501,
+      "addedAt": "2026-11-26T06:56:25.360Z",
+      "updatedAt": "2026-11-26T06:56:25.360Z"
     }
   ],
   "hidden": [],

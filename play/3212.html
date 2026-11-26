@@ -1,0 +1,1229 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>시장의 신 : 편의점 & 글로벌 무역 타이쿤</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      min-height: 100%;
+      background: radial-gradient(circle at top, #131c31 0%, #090d16 100%);
+      color: #f1f5f9;
+      font-family: 'Noto Sans KR', sans-serif;
+    }
+    .font-display {
+      font-family: 'Black Han Sans', 'Noto Sans KR', sans-serif;
+      letter-spacing: 0.02em;
+    }
+    .glass-card {
+      background: linear-gradient(180deg, rgba(30, 41, 59, 0.88) 0%, rgba(15, 23, 42, 0.94) 100%);
+      border: 1px solid rgba(148, 163, 184, 0.22);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+      backdrop-filter: blur(10px);
+    }
+    .gold-btn {
+      background: linear-gradient(180deg, #f59e0b 0%, #d97706 100%);
+      color: #0f172a;
+      font-weight: 900;
+      box-shadow: 0 4px 14px rgba(245, 158, 11, 0.38);
+      transition: transform 0.1s ease, filter 0.15s ease;
+    }
+    .gold-btn:hover {
+      filter: brightness(1.08);
+      transform: translateY(-1px);
+    }
+    .gold-btn:active {
+      transform: translateY(1px) scale(0.98);
+    }
+    input[type="range"] {
+      accent-color: #38bdf8;
+    }
+    @keyframes tickerMove {
+      0% { transform: translateX(0%); }
+      100% { transform: translateX(-50%); }
+    }
+    .animate-ticker {
+      display: inline-block;
+      white-space: nowrap;
+      animation: tickerMove 22s linear infinite;
+    }
+  </style>
+</head>
+<body class="p-2.5 sm:p-4 md:p-6 flex flex-col items-center">
+
+  <!-- ====================================================================== -->
+  <!-- TOP HUD: TURN, CASH, CREDIT, EXCHANGE RATE, CPI & MACRO INDICATORS     -->
+  <!-- ====================================================================== -->
+  <header class="w-full max-w-6xl glass-card rounded-2xl p-3 sm:p-4 mb-3">
+    <div class="flex flex-wrap items-center justify-between gap-2 pb-2.5 mb-2.5 border-b border-slate-700/70">
+      <div class="flex items-center gap-2.5">
+        <span class="text-2xl sm:text-3xl">🏛️</span>
+        <div>
+          <h1 class="font-display text-lg sm:text-2xl text-amber-300 leading-tight">시장의 신 : 편의점 & 글로벌 무역 타이쿤</h1>
+          <p class="text-[11px] sm:text-xs text-slate-400">중3 2학기 사회 완벽 정복 · 수요와 공급 · 기회비용 · 환율 · 물가와 금리</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <button id="btnNoteBook" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-xs font-bold text-sky-300 cursor-pointer">
+          📘 사회 핵심 노트
+        </button>
+        <button id="btnMute" class="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-xs font-bold cursor-pointer" title="효과음 켜기/끄기">
+          🔊
+        </button>
+      </div>
+    </div>
+
+    <!-- 5 Live Economic Indicators -->
+    <div class="grid grid-cols-2 sm:grid-cols-5 gap-2 text-xs sm:text-sm">
+      <div class="bg-slate-900/80 border border-slate-700/80 rounded-xl px-3 py-2">
+        <div class="text-[11px] text-slate-400">📅 경영 주차</div>
+        <div class="font-black text-base sm:text-lg text-white"><span id="hudTurn">1</span> <span class="text-xs font-normal text-slate-400">/ 10주</span></div>
+      </div>
+      <div class="bg-slate-900/80 border border-slate-700/80 rounded-xl px-3 py-2">
+        <div class="text-[11px] text-slate-400">💰 보유 자본금</div>
+        <div id="hudCash" class="font-black text-base sm:text-lg text-emerald-400">1,000,000원</div>
+      </div>
+      <div class="bg-slate-900/80 border border-slate-700/80 rounded-xl px-3 py-2">
+        <div class="text-[11px] text-slate-400">💵 원/달러 환율</div>
+        <div class="font-black text-base sm:text-lg text-amber-300">
+          <span id="hudFx">1,300</span>원
+          <span id="hudFxTrend" class="text-xs ml-1 text-slate-400">(-)</span>
+        </div>
+      </div>
+      <div class="bg-slate-900/80 border border-slate-700/80 rounded-xl px-3 py-2">
+        <div class="text-[11px] text-slate-400">📊 물가 · 기준금리</div>
+        <div class="font-black text-sm sm:text-base text-sky-300">
+          물가 <span id="hudCpi">100</span> · 금리 <span id="hudRate">3.5%</span>
+        </div>
+      </div>
+      <div class="col-span-2 sm:col-span-1 bg-slate-900/80 border border-slate-700/80 rounded-xl px-3 py-2">
+        <div class="text-[11px] text-slate-400">⭐ 시장 평판 (목표: 500만)</div>
+        <div id="hudRep" class="font-black text-base sm:text-lg text-purple-300">50점</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ====================================================================== -->
+  <!-- LIVE ECONOMIC NEWS BREAKING BANNER                                     -->
+  <!-- ====================================================================== -->
+  <section class="w-full max-w-6xl glass-card rounded-2xl p-3 sm:p-4 mb-3 border-l-4 border-l-rose-500">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-2">
+      <div class="flex items-start gap-2.5">
+        <span class="px-2.5 py-1 rounded-lg bg-rose-600 text-white text-xs font-black shrink-0 mt-0.5">📰 경제 속보</span>
+        <div>
+          <h2 id="newsHeadline" class="font-bold text-sm sm:text-base text-amber-200">
+            [1주차] 평온한 주말 상권! 아직 특별한 외부 충격이 없습니다.
+          </h2>
+          <p id="newsHint" class="text-xs text-slate-300 mt-0.5">
+            💡 분석 힌트: 각 상품의 균형 가격 근처에서 가격을 설정하고, 환율 변동을 이용해 수출·수입 차익을 노려보세요!
+          </p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 shrink-0">
+        <span id="newsConceptBadge" class="px-3 py-1 rounded-full bg-indigo-950 border border-indigo-500/50 text-indigo-200 text-xs font-bold">
+          단원: 시장 가격의 결정
+        </span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================================================================== -->
+  <!-- MAIN WORKSPACE: LEFT (SUPPLY & DEMAND) + RIGHT (FX TRADE & DECISIONS)  -->
+  <!-- ====================================================================== -->
+  <main class="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-12 gap-3 mb-4">
+
+    <!-- LEFT 7 COLS: DOMESTIC CONVENIENCE STORE (SUPPLY & DEMAND CURVE CANVAS) -->
+    <section class="lg:col-span-7 glass-card rounded-2xl p-3.5 sm:p-4 flex flex-col justify-between">
+      <div>
+        <div class="flex items-center justify-between mb-2">
+          <div>
+            <h3 class="font-display text-base sm:text-lg text-sky-300">🏪 1구역 : 수요와 공급 상점 경영</h3>
+            <p class="text-[11px] text-slate-400">뉴스에 따라 수요·공급 곡선이 이동합니다. 균형 가격(P*)에 가깝게 가격과 생산량을 맞추세요!</p>
+          </div>
+          <span class="text-[11px] px-2.5 py-1 rounded-lg bg-slate-800 border border-slate-700 text-slate-300">
+            초과수요=품절 / 초과공급=재고손실
+          </span>
+        </div>
+
+        <!-- Product Tabs -->
+        <div id="productTabs" class="grid grid-cols-3 gap-2 mb-3"></div>
+
+        <!-- Selected Product Interactive Supply & Demand Graph + Controls -->
+        <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center bg-slate-900/75 border border-slate-700/70 rounded-2xl p-3">
+          <div class="sm:col-span-6 flex flex-col items-center">
+            <canvas id="sdCanvas" width="280" height="210" class="w-full max-w-[280px] rounded-xl bg-slate-950 border border-slate-800"></canvas>
+            <div class="flex items-center gap-3 text-[11px] mt-1.5 text-slate-300">
+              <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-rose-400 inline-block"></span>수요(D)</span>
+              <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-sky-400 inline-block"></span>공급(S)</span>
+              <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-amber-300 inline-block"></span>내 설정(P,Q)</span>
+            </div>
+          </div>
+
+          <div class="sm:col-span-6 space-y-3 text-xs">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-1.5">
+              <span id="prodTitle" class="font-bold text-sm text-white">🍦 프리미엄 아이스크림</span>
+              <span id="prodCostBadge" class="text-[11px] text-slate-400">개당 원가: 1,000원</span>
+            </div>
+
+            <!-- Price Slider -->
+            <div>
+              <div class="flex justify-between mb-1">
+                <span class="text-slate-300 font-bold">🏷️ 판매 가격 (P)</span>
+                <span id="lblMyPrice" class="font-black text-amber-300">2,000원</span>
+              </div>
+              <input id="sliderPrice" type="range" min="1000" max="4000" step="100" value="2000" class="w-full cursor-pointer" />
+              <div class="flex justify-between text-[10px] text-slate-400 mt-0.5">
+                <span>1,000원 (저가)</span>
+                <span id="lblEqHint" class="text-emerald-400 font-bold">예상 균형: 2,000원</span>
+                <span>4,000원 (고가)</span>
+              </div>
+            </div>
+
+            <!-- Quantity Slider -->
+            <div>
+              <div class="flex justify-between mb-1">
+                <span class="text-slate-300 font-bold">📦 이번 주 입고량 (Q)</span>
+                <span id="lblMyQty" class="font-black text-sky-300">100개</span>
+              </div>
+              <input id="sliderQty" type="range" min="20" max="220" step="10" value="100" class="w-full cursor-pointer" />
+              <div class="flex justify-between text-[10px] text-slate-400 mt-0.5">
+                <span>20개</span>
+                <span id="lblProdCostTotal" class="text-rose-300">입고 원가: 100,000원</span>
+                <span>220개</span>
+              </div>
+            </div>
+
+            <!-- Live Market Forecast Box -->
+            <div id="marketStatusBox" class="p-2.5 rounded-xl bg-slate-950/90 border border-slate-800 text-[11px] leading-relaxed">
+              상태 분석 중...
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Summary of All 3 Products -->
+      <div id="allProductsMini" class="grid grid-cols-3 gap-2 mt-3 text-[11px]"></div>
+    </section>
+
+    <!-- RIGHT 5 COLS: GLOBAL FX TRADE & OPPORTUNITY COST DECISION -->
+    <section class="lg:col-span-5 flex flex-col gap-3">
+
+      <!-- 2. GLOBAL EXCHANGE RATE & EXPORT/IMPORT PORT -->
+      <div class="glass-card rounded-2xl p-3.5 sm:p-4">
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="font-display text-base sm:text-lg text-amber-300">🚢 2구역 : 글로벌 무역 & 외환 거래</h3>
+          <span class="text-[11px] text-slate-400">보유 외화: <strong id="usdHold" class="text-emerald-300">$0</strong></span>
+        </div>
+
+        <canvas id="fxCanvas" width="380" height="95" class="w-full h-[85px] rounded-xl bg-slate-950 border border-slate-800 mb-2.5"></canvas>
+
+        <div class="grid grid-cols-2 gap-2 text-xs mb-2">
+          <!-- Dollar Buy/Sell -->
+          <div class="bg-slate-900/80 border border-slate-700/80 rounded-xl p-2.5">
+            <div class="font-bold text-slate-200 mb-1">💱 달러 환전 ($100 단위)</div>
+            <div class="text-[10px] text-slate-400 mb-2">환율 낮을 때 매수 → 높을 때 매도</div>
+            <div class="flex gap-1.5">
+              <button id="btnBuyUsd" class="flex-1 py-1.5 rounded-lg bg-sky-600 hover:bg-sky-500 text-white font-bold cursor-pointer">달러 매수</button>
+              <button id="btnSellUsd" class="flex-1 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-500 text-white font-bold cursor-pointer">달러 매도</button>
+            </div>
+          </div>
+
+          <!-- Export vs Import Contract -->
+          <div class="bg-slate-900/80 border border-slate-700/80 rounded-xl p-2.5">
+            <div class="font-bold text-slate-200 mb-1">🌐 이번 주 무역 계약</div>
+            <div class="text-[10px] text-slate-400 mb-2">환율↑ 수출 유리 / 환율↓ 수입 유리</div>
+            <div class="flex gap-1.5">
+              <button id="btnTradeExport" class="flex-1 py-1.5 rounded-lg border text-[11px] font-bold cursor-pointer transition">수출 계약</button>
+              <button id="btnTradeImport" class="flex-1 py-1.5 rounded-lg border text-[11px] font-bold cursor-pointer transition">수입 계약</button>
+            </div>
+          </div>
+        </div>
+        <div id="tradeHintText" class="text-[11px] text-amber-200/90 bg-slate-950/70 rounded-lg px-2.5 py-1.5">
+          이번 주 무역 선택: 없음 (원하는 무역 방식을 선택하면 결산 시 환율에 따라 손익이 정산됩니다)
+        </div>
+      </div>
+
+      <!-- 3. OPPORTUNITY COST & ECONOMIC DILEMMA CHOICE -->
+      <div class="glass-card rounded-2xl p-3.5 sm:p-4 flex-1 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between mb-1.5">
+            <h3 class="font-display text-base sm:text-lg text-purple-300">⚖️ 3구역 : 합리적 선택 & 기회비용</h3>
+            <span class="text-[10px] px-2 py-0.5 rounded-full bg-purple-950 border border-purple-500/40 text-purple-200">택1 전략</span>
+          </div>
+          <p id="dilemmaPrompt" class="text-xs text-slate-300 mb-2.5">
+            제한된 예산으로 이번 주 핵심 경영 전략 하나만 선택할 수 있습니다. 포기한 선택지의 가치가 바로 <strong>기회비용</strong>입니다!
+          </p>
+          <div id="dilemmaChoices" class="space-y-2"></div>
+        </div>
+
+        <button id="btnNextTurn" class="gold-btn w-full py-3.5 px-5 rounded-2xl font-display text-xl mt-3 cursor-pointer">
+          📊 1주차 시장 결산 및 다음 주로 ▶
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <!-- ====================================================================== -->
+  <!-- TURN SETTLEMENT REPORT MODAL                                           -->
+  <!-- ====================================================================== -->
+  <div id="reportModal" class="fixed inset-0 z-40 hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+    <div class="glass-card rounded-3xl max-w-xl w-full p-5 sm:p-6 border-2 border-amber-400/50">
+      <div class="flex items-center justify-between border-b border-slate-700 pb-3 mb-3">
+        <div>
+          <span class="text-xs font-bold text-amber-300">WEEKLY ECONOMIC REPORT</span>
+          <h2 id="repTitle" class="font-display text-2xl text-white">1주차 시장 결산 보고서</h2>
+        </div>
+        <span id="repNetBadge" class="px-3 py-1 rounded-full text-xs font-black bg-emerald-950 text-emerald-300 border border-emerald-500/40">
+          +250,000원 흑자
+        </span>
+      </div>
+
+      <div id="repBreakdown" class="space-y-2 text-xs sm:text-sm max-h-72 overflow-y-auto pr-1 mb-4"></div>
+
+      <!-- Mini Social Studies Quiz / Feedback Box -->
+      <div id="repConceptNote" class="p-3 rounded-2xl bg-indigo-950/80 border border-indigo-500/40 text-xs text-indigo-100 leading-relaxed mb-3">
+      </div>
+
+      <!-- Interactive Middle School Social Studies Quiz Box -->
+      <div id="repQuizBox" class="p-3.5 rounded-2xl bg-slate-900/95 border border-amber-400/50 text-xs mb-4">
+        <div class="flex items-center justify-between mb-1.5">
+          <span class="font-black text-amber-300">🎓 중3 사회 실전 확인 퀴즈 (정답 시 장학금 +150,000원)</span>
+          <span id="repQuizStatus" class="text-[11px] font-bold text-slate-400">1문제 선택</span>
+        </div>
+        <p id="repQuizQuestion" class="text-slate-100 font-bold mb-2 leading-snug"></p>
+        <div id="repQuizOptions" class="grid grid-cols-1 sm:grid-cols-2 gap-1.5"></div>
+      </div>
+
+      <button id="btnCloseReport" class="gold-btn w-full py-3 rounded-2xl font-display text-lg cursor-pointer">
+        다음 주차 경영 시작 ▶
+      </button>
+    </div>
+  </div>
+
+  <!-- ====================================================================== -->
+  <!-- SOCIAL STUDIES CHEAT SHEET MODAL                                       -->
+  <!-- ====================================================================== -->
+  <div id="noteModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/85 backdrop-blur-sm p-4">
+    <div class="glass-card rounded-3xl max-w-2xl w-full p-5 sm:p-6">
+      <div class="flex items-center justify-between border-b border-slate-700 pb-3 mb-3">
+        <h2 class="font-display text-2xl text-sky-300">📘 중3 2학기 사회 핵심 경제 노트</h2>
+        <button id="btnCloseNote" class="px-3 py-1 rounded-xl bg-slate-800 text-xs font-bold cursor-pointer">닫기 ✕</button>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs leading-relaxed max-h-[65vh] overflow-y-auto pr-1">
+        <div class="p-3 rounded-2xl bg-slate-900/90 border border-slate-700">
+          <div class="font-bold text-rose-300 text-sm mb-1">1. 수요와 공급의 법칙</div>
+          <p class="text-slate-300">• <strong>수요 증가(곡선 우측 이동)</strong>: 소득 증가, 선호도 상승, 대체재 가격 상승 → <strong>균형 가격(▲), 균형 거래량(▲)</strong><br>• <strong>공급 감소(곡선 좌측 이동)</strong>: 원자재 가격 상승, 자연재해 → <strong>균형 가격(▲), 균형 거래량(▼)</strong></p>
+        </div>
+        <div class="p-3 rounded-2xl bg-slate-900/90 border border-slate-700">
+          <div class="font-bold text-purple-300 text-sm mb-1">2. 합리적 선택과 기회비용</div>
+          <p class="text-slate-300">• <strong>기회비용</strong>: 어떤 선택을 함으로써 포기해야 하는 대안들 중 <strong>가장 가치가 큰 것</strong>(명시적 비용 + 암묵적 비용).<br>• <strong>매몰비용</strong>: 이미 지출되어 회수할 수 없는 비용으로, 합리적 선택 시 고려하지 않아야 합니다.</p>
+        </div>
+        <div class="p-3 rounded-2xl bg-slate-900/90 border border-slate-700">
+          <div class="font-bold text-amber-300 text-sm mb-1">3. 환율 변동의 영향</div>
+          <p class="text-slate-300">• <strong>환율 상승 (원화 가치 하락)</strong>: 수출 기업의 가격 경쟁력 상승(<strong>수출 유리</strong>), 수입 원자재 가격 상승(<strong>수입 불리</strong>).<br>• <strong>환율 하락 (원화 가치 상승)</strong>: 해외여행·유학·<strong>수입 유리</strong>, 수출 불리.</p>
+        </div>
+        <div class="p-3 rounded-2xl bg-slate-900/90 border border-slate-700">
+          <div class="font-bold text-emerald-300 text-sm mb-1">4. 물가 안정과 금리 정책</div>
+          <p class="text-slate-300">• <strong>인플레이션(물가 지속 상승)</strong> 발생 시 중앙은행은 <strong>기준금리 인상</strong>으로 시중 통화량을 줄이고, 정부는 지출을 축소해 경기를 진정시킵니다.</p>
+        </div>
+        <div class="p-3 rounded-2xl bg-slate-900/90 border border-slate-700">
+          <div class="font-bold text-sky-300 text-sm mb-1">5. 국내 총생산(GDP)과 경제 성장</div>
+          <p class="text-slate-300">• <strong>국내 총생산(GDP)</strong>: 한 나라의 국경 안에서 일정 기간 동안 새롭게 생산된 <strong>최종 생산물</strong>의 시장 가치를 합한 것입니다.<br>• 중간재, 중고품 거래, 가사 노동은 GDP에 포함되지 않습니다.</p>
+        </div>
+        <div class="p-3 rounded-2xl bg-slate-900/90 border border-slate-700">
+          <div class="font-bold text-amber-200 text-sm mb-1">6. 비교 우위와 자유 무역</div>
+          <p class="text-slate-300">• <strong>비교 우위</strong>: 다른 나라보다 더 적은 <strong>기회비용</strong>으로 생산할 수 있는 재화에 특화하여 교역하면 무역 당사국 모두 이익을 얻습니다.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================================================================== -->
+  <!-- FINAL ENDING & GRADE CERTIFICATE MODAL                                 -->
+  <!-- ====================================================================== -->
+  <div id="endingModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/90 backdrop-blur-sm p-4">
+    <div class="glass-card rounded-3xl max-w-lg w-full p-6 text-center border-2 border-amber-400">
+      <div class="text-xs font-black tracking-widest text-amber-300 mb-1">10 WEEKS ECONOMIC SIMULATION COMPLETE</div>
+      <div id="endEmoji" class="text-5xl my-2">👑</div>
+      <h2 id="endGradeTitle" class="font-display text-3xl text-amber-300 mb-2">전설의 경제학자 · 시장의 신!</h2>
+      <p id="endSummary" class="text-xs sm:text-sm text-slate-200 leading-relaxed mb-4"></p>
+
+      <div class="bg-slate-950/90 border border-slate-700 rounded-2xl p-4 mb-5 space-y-2 text-xs sm:text-sm text-left">
+        <div class="flex justify-between"><span class="text-slate-400">최종 보유 자산</span><strong id="endCash" class="text-emerald-400">0원</strong></div>
+        <div class="flex justify-between"><span class="text-slate-400">최종 시장 평판</span><strong id="endRep" class="text-purple-300">0점</strong></div>
+        <div class="flex justify-between"><span class="text-slate-400">사회 경제 이해도 등급</span><strong id="endRank" class="text-amber-300">S등급</strong></div>
+      </div>
+
+      <button id="btnRestart" class="gold-btn w-full py-3.5 rounded-2xl font-display text-xl cursor-pointer">
+        새로운 경제 시나리오로 다시 도전 ▶
+      </button>
+    </div>
+  </div>
+
+  <script>
+    /**
+     * ============================================================================
+     * 시장의 신 : 편의점 & 글로벌 무역 타이쿤 (Middle School 3-2 Social Studies Game)
+     * Covers: Supply & Demand Equilibrium, Opportunity Cost, FX Rates & Trade, CPI/Interest
+     * ============================================================================
+     */
+
+    // ============================================================================
+    // 1. SYNTHESIZED SOUND EFFECTS (WEB AUDIO API)
+    // ============================================================================
+    class SoundEngine {
+      constructor() {
+        this.ctx = null;
+        this.muted = false;
+      }
+      unlock() {
+        if (!this.ctx) {
+          const AC = window.AudioContext || window.webkitAudioContext;
+          if (AC) this.ctx = new AC();
+        }
+        if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume().catch(() => {});
+      }
+      tone(freq, type, dur, vol = 0.1, delay = 0) {
+        if (this.muted || !this.ctx) return;
+        const t = this.ctx.currentTime + delay;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, t);
+        gain.gain.setValueAtTime(vol, t);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + dur);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(t);
+        osc.stop(t + dur + 0.01);
+      }
+      playClick() { this.tone(620, 'sine', 0.06, 0.08); }
+      playCoin() {
+        this.tone(987.77, 'sine', 0.08, 0.11, 0);
+        this.tone(1318.51, 'sine', 0.18, 0.11, 0.07);
+      }
+      playAlert() {
+        this.tone(440, 'triangle', 0.12, 0.1, 0);
+        this.tone(554.37, 'triangle', 0.18, 0.1, 0.1);
+      }
+      playSuccess() {
+        [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => this.tone(f, 'triangle', 0.25, 0.11, i * 0.08));
+      }
+    }
+    const audio = new SoundEngine();
+
+    // ============================================================================
+    // 2. CURRICULUM SCENARIOS (10 WEEKS OF SOCIAL STUDIES EVENTS)
+    // ============================================================================
+    const WEEKLY_SCENARIOS = [
+      {
+        turn: 1,
+        badge: '단원 1 : 균형 가격의 형성',
+        headline: '[1주차] 평온한 주말 상권! 수요와 공급이 안정적인 균형을 이루고 있습니다.',
+        hint: '균형 가격(P*)과 균형 거래량(Q*)에 가깝게 설정하면 초과 수요(품절)나 초과 공급(재고 폐기) 없이 최대 이익을 얻습니다.',
+        dShift: { ice: 0, umbrella: 0, ramyun: 0 },
+        sShift: { ice: 0, umbrella: 0, ramyun: 0 },
+        fxDelta: 0,
+        cpiDelta: 0,
+        rateDelta: 0,
+        conceptNote: '💡 [시장 가격의 결정] 수요량과 공급량이 일치하는 지점에서 균형 가격과 균형 거래량이 결정됩니다. 가격이 균형보다 높으면 초과 공급(재고), 낮으면 초과 수요(품절)가 발생합니다.',
+        quiz: {
+          q: '시장 가격이 균형 가격보다 낮게 형성되었을 때 나타나는 현상은?',
+          options: ['초과 공급이 발생해 재고가 쌓인다', '초과 수요가 발생해 물건이 품절된다', '공급량이 수요량보다 많아진다', '가격이 더 낮아지려는 압력을 받는다'],
+          answer: 1
+        }
+      },
+      {
+        turn: 2,
+        badge: '단원 1 : 수요 곡선의 이동',
+        headline: '[2주차] 역대급 5월 폭염 특보! 시원한 아이스크림을 찾는 손님이 폭증합니다!',
+        hint: '기온 상승으로 아이스크림 수요가 증가(수요 곡선 우측 이동)했습니다! 아이스크림의 균형 가격(▲)과 균형 거래량(▲)을 함께 올리세요!',
+        dShift: { ice: +45, umbrella: -15, ramyun: -10 },
+        sShift: { ice: 0, umbrella: 0, ramyun: 0 },
+        fxDelta: +20,
+        cpiDelta: +1,
+        rateDelta: 0,
+        conceptNote: '💡 [수요 증가의 효과] 기호·날씨 변화로 수요 곡선이 오른쪽으로 이동하면 균형 가격은 상승하고, 균형 거래량도 함께 증가합니다.',
+        quiz: {
+          q: '폭염으로 아이스크림에 대한 수요가 증가할 때 균형 가격과 균형 거래량의 변화는?',
+          options: ['균형 가격 상승, 균형 거래량 증가', '균형 가격 하락, 균형 거래량 증가', '균형 가격 상승, 균형 거래량 감소', '균형 가격 하락, 균형 거래량 감소'],
+          answer: 0
+        }
+      },
+      {
+        turn: 3,
+        badge: '단원 3 : 환율 상승과 수출입',
+        headline: '[3주차] 미국 기준금리 인상 발표! 원/달러 환율이 1,420원으로 급등했습니다!',
+        hint: '환율 상승(원화 가치 하락) 시 외국인이 우리 상품을 싸게 살 수 있어 [수출 계약]이 매우 유리해집니다! 보유 달러도 비싸게 팔 수 있습니다.',
+        dShift: { ice: +10, umbrella: 0, ramyun: +10 },
+        sShift: { ice: 0, umbrella: 0, ramyun: -10 },
+        fxDelta: +100,
+        cpiDelta: +2,
+        rateDelta: +0.25,
+        conceptNote: '💡 [환율 상승의 영향] 환율이 오르면(원화 가치 하락) 수출 기업의 가격 경쟁력이 높아져 수출이 유리해지는 반면, 수입 원자재 가격은 상승하여 수입이 불리해집니다.',
+        quiz: {
+          q: '원/달러 환율이 1,200원에서 1,400원으로 상승했을 때 유리해지는 경제 활동은?',
+          options: ['미국으로 해외여행 가기', '미국산 원자재 수입하기', '한국산 제품을 미국에 수출하기', '달러를 빌려 갚아야 하는 기업'],
+          answer: 2
+        }
+      },
+      {
+        turn: 4,
+        badge: '단원 1 : 공급 곡선의 이동',
+        headline: '[4주차] 국제 밀가루·식용유 가격 폭등! 라면 생산 원가가 크게 올랐습니다!',
+        hint: '생산 요소(원자재) 가격 상승으로 라면의 공급이 감소(공급 곡선 좌측 이동)했습니다! 균형 가격은 오르고(▲) 균형 거래량은 줄어듭니다(▼).',
+        dShift: { ice: 0, umbrella: 0, ramyun: 0 },
+        sShift: { ice: 0, umbrella: 0, ramyun: -40 },
+        fxDelta: +30,
+        cpiDelta: +3,
+        rateDelta: 0,
+        conceptNote: '💡 [공급 감소의 효과] 원자재 가격 상승이나 재해로 공급 곡선이 왼쪽으로 이동하면 균형 가격은 상승하고, 균형 거래량은 감소합니다.',
+        quiz: {
+          q: '밀가루 가격 상승으로 라면 공급이 감소했을 때 시장의 균형 가격과 거래량은?',
+          options: ['균형 가격 상승, 균형 거래량 감소', '균형 가격 상승, 균형 거래량 증가', '균형 가격 하락, 균형 거래량 감소', '균형 가격 하락, 균형 거래량 증가'],
+          answer: 0
+        }
+      },
+      {
+        turn: 5,
+        badge: '단원 1 : 연관재(대체재·보완재)',
+        headline: '[5주차] 장마 전선 북상 & 경쟁사 빙수 가격 폭등! 우산과 아이스크림에 변화가 생겼습니다!',
+        hint: '장마로 우산 수요가 급증하고, 대체재인 빙수 가격 상승으로 아이스크림 수요도 함께 증가했습니다!',
+        dShift: { ice: +25, umbrella: +55, ramyun: +15 },
+        sShift: { ice: 0, umbrella: 0, ramyun: 0 },
+        fxDelta: -40,
+        cpiDelta: +1,
+        rateDelta: 0,
+        conceptNote: '💡 [대체재와 수요 이동] 서로 대신 쓸 수 있는 재화(대체재)의 가격이 오르면, 상대적으로 저렴해진 다른 재화의 수요가 증가합니다.',
+        quiz: {
+          q: '콜라 가격이 크게 올랐을 때 대체재인 사이다 시장에 나타나는 변화는?',
+          options: ['사이다 수요 증가 → 균형 가격 상승', '사이다 수요 감소 → 균형 가격 하락', '사이다 공급 증가 → 균형 가격 하락', '사이다 공급 감소 → 균형 가격 상승'],
+          answer: 0
+        }
+      },
+      {
+        turn: 6,
+        badge: '단원 3 : 환율 하락과 수입 유리',
+        headline: '[6주차] 반도체 수출 호황으로 달러 유입 급증! 원/달러 환율이 1,210원까지 하락했습니다!',
+        hint: '환율 하락(원화 가치 상승) 시 해외 상품을 싸게 들여올 수 있으므로 [수입 계약]과 달러 매수가 유리합니다!',
+        dShift: { ice: +15, umbrella: -20, ramyun: +10 },
+        sShift: { ice: +10, umbrella: 0, ramyun: +15 },
+        fxDelta: -140,
+        cpiDelta: -1,
+        rateDelta: 0,
+        conceptNote: '💡 [환율 하락의 영향] 환율이 내리면(원화 가치 상승) 외국 물건을 더 적은 원화로 살 수 있어 수입이 유리해지고 국내 물가 안정에 도움이 됩니다.',
+        quiz: {
+          q: '원/달러 환율이 하락(원화 가치 상승)할 때 나타나는 현상으로 옳은 것은?',
+          options: ['우리나라 수출품의 달러 표시 가격이 낮아진다', '해외여행 경비 부담이 커진다', '외국산 원자재 수입 비용이 줄어든다', '수출 기업의 채산성이 크게 좋아진다'],
+          answer: 2
+        }
+      },
+      {
+        turn: 7,
+        badge: '단원 2 : 매몰비용의 함정',
+        headline: '[7주차] 신제품 개발비 30만 원을 이미 투자했지만 반응이 냉담합니다! 어떻게 하시겠습니까?',
+        hint: '이미 지출해 회수할 수 없는 돈은 [매몰비용]입니다. 합리적 선택을 할 때는 매몰비용을 고려하지 말고 앞으로의 편익과 비용만 따져야 합니다!',
+        dShift: { ice: +10, umbrella: +10, ramyun: +20 },
+        sShift: { ice: +15, umbrella: +10, ramyun: +10 },
+        fxDelta: +15,
+        cpiDelta: +1,
+        rateDelta: 0,
+        conceptNote: '💡 [매몰비용] 이미 지불하여 회수할 수 없는 비용입니다. "본전이 아까워서" 계속 투자하는 것은 비합리적 선택입니다.',
+        quiz: {
+          q: '이미 지출되어 회수할 수 없으므로 합리적 선택 시 고려하지 않아야 하는 비용은?',
+          options: ['기회비용', '암묵적 비용', '매몰비용', '생산비용'],
+          answer: 2
+        }
+      },
+      {
+        turn: 8,
+        badge: '단원 3 : 인플레이션과 금리 정책',
+        headline: '[8주차] 시중 통화량 증가로 물가 지수 급등! 한국은행이 기준금리를 인상했습니다!',
+        hint: '인플레이션 억제를 위한 기준금리 인상으로 소비 심리가 진정되고, 외국인 자금 유입으로 환율은 소폭 하락합니다.',
+        dShift: { ice: -20, umbrella: -10, ramyun: -15 },
+        sShift: { ice: 0, umbrella: 0, ramyun: 0 },
+        fxDelta: -45,
+        cpiDelta: +4,
+        rateDelta: +0.5,
+        conceptNote: '💡 [인플레이션 대책] 물가가 지속적으로 오를 때 중앙은행은 기준금리를 인상하고, 정부는 재정 지출을 줄여 총수요를 진정시킵니다.',
+        quiz: {
+          q: '인플레이션(물가 지속 상승)이 심할 때 중앙은행이 취하는 통화 정책으로 적절한 것은?',
+          options: ['기준금리 인상', '기준금리 인하', '화폐 발행량 대폭 확대', '정부 공공사업 대폭 확대'],
+          answer: 0
+        }
+      },
+      {
+        turn: 9,
+        badge: '단원 1 : 기술 혁신과 공급 증가',
+        headline: '[9주차] 스마트 자동화 물류 시스템 도입! 모든 상품의 생산 효율이 크게 향상되었습니다!',
+        hint: '기술 발전으로 공급이 증가(공급 곡선 우측 이동)했습니다! 균형 가격은 내려가고(▼) 균형 거래량은 늘어납니다(▲).',
+        dShift: { ice: +10, umbrella: +10, ramyun: +15 },
+        sShift: { ice: +40, umbrella: +35, ramyun: +40 },
+        fxDelta: +25,
+        cpiDelta: -2,
+        rateDelta: 0,
+        conceptNote: '💡 [공급 증가의 효과] 기술 혁신이나 생산 요소 가격 하락으로 공급 곡선이 오른쪽으로 이동하면 균형 가격은 하락하고 거래량은 증가합니다.',
+        quiz: {
+          q: '생산 기술의 혁신으로 상품의 공급이 증가할 때 시장의 변화는?',
+          options: ['균형 가격 하락, 균형 거래량 증가', '균형 가격 상승, 균형 거래량 증가', '균형 가격 하락, 균형 거래량 감소', '균형 가격 상승, 균형 거래량 감소'],
+          answer: 0
+        }
+      },
+      {
+        turn: 10,
+        badge: '단원 3 : 국내 총생산(GDP) 결산 주간',
+        headline: '[10주차 최종 결산] 연말 소비 특수로 수요가 활기를 띱니다! 마지막 주간 최대 수익을 달성하세요!',
+        hint: '10주차 결산 후 최종 자본금과 평판에 따라 [시장의 신] 등급이 결정됩니다. 균형 가격과 무역 전략을 총동원하세요!',
+        dShift: { ice: +30, umbrella: +25, ramyun: +35 },
+        sShift: { ice: +15, umbrella: +15, ramyun: +15 },
+        fxDelta: +40,
+        cpiDelta: +1,
+        rateDelta: 0,
+        conceptNote: '💡 [국내 총생산(GDP)] 일정 기간 동안 한 나라 안에서 새롭게 생산된 최종 생산물의 시장 가치를 합한 것으로, 한 나라의 경제 규모를 나타냅니다.',
+        quiz: {
+          q: '다음 중 우리나라의 국내 총생산(GDP)에 포함되는 항목은?',
+          options: ['중고 거래 앱에서 산 자전거 가격', '주부가 집에서 직접 한 요리 노동', '올해 국내 공장에서 새로 생산된 자동차 가격', '빵을 만들기 위해 제빵사가 구입한 밀가루 값'],
+          answer: 2
+        }
+      }
+    ];
+
+    const DILEMMA_CHOICES = [
+      {
+        id: 'opt_ad',
+        title: '📣 SNS 바이럴 마케팅 투자 (비용: 120,000원)',
+        desc: '이번 주 상점 수요 +20 증가, 평판 +6점 (기회비용: 설비 자동화 포기)',
+        cost: 120000,
+        apply(g) {
+          g.bonusDemand = 20;
+          g.rep = Math.min(100, g.rep + 6);
+          return '마케팅 효과로 손님이 늘어 매출과 평판(+6)이 상승했습니다!';
+        }
+      },
+      {
+        id: 'opt_tech',
+        title: '⚙️ 재고 관리 자동화 도입 (비용: 150,000원)',
+        desc: '이번 주 개당 생산 원가 -200원 절감 (기회비용: 마케팅 효과 포기)',
+        cost: 150000,
+        apply(g) {
+          g.costDiscount = 200;
+          return '원가 절감 시스템으로 생산 비용을 크게 아꼈습니다!';
+        }
+      },
+      {
+        id: 'opt_save',
+        title: '🏦 보수적 현금 유보 전략 (비용: 0원)',
+        desc: '기준금리 이자 수익 획득 + 위험 회피 (기회비용: 성장 투자 기회 포기)',
+        cost: 0,
+        apply(g) {
+          const interest = Math.round(g.cash * (g.rate / 100));
+          g.cash += interest;
+          return `현금을 유보하여 이자 수익 +${interest.toLocaleString()}원을 얻었습니다!`;
+        }
+      }
+    ];
+
+    // ============================================================================
+    // 3. MAIN TYCOON GAME CONTROLLER
+    // ============================================================================
+    class MarketGodGame {
+      constructor() {
+        this.products = [
+          { id: 'ice', name: '프리미엄 아이스크림', icon: '🍦', unitCost: 1000, baseEqP: 2000, baseEqQ: 110, myP: 2000, myQ: 110 },
+          { id: 'umbrella', name: '자동 방풍 우산', icon: '☂️', unitCost: 1500, baseEqP: 2800, baseEqQ: 90, myP: 2800, myQ: 90 },
+          { id: 'ramyun', name: '매콤 왕컵라면', icon: '🍜', unitCost: 800, baseEqP: 1600, baseEqQ: 130, myP: 1600, myQ: 130 }
+        ];
+        this.selectedProdId = 'ice';
+        this.bindEvents();
+        this.resetGame();
+      }
+
+      resetGame() {
+        this.turn = 1;
+        this.cash = 1000000;
+        this.usd = 0;
+        this.fx = 1300;
+        this.fxHistory = [1280, 1295, 1300];
+        this.cpi = 100;
+        this.rate = 3.5;
+        this.rep = 50;
+        this.tradeMode = null; // 'export' | 'import' | null
+        this.selectedDilemmaId = 'opt_save';
+        this.bonusDemand = 0;
+        this.costDiscount = 0;
+        this.quizAnswered = false;
+
+        this.products[0].myP = 2000; this.products[0].myQ = 110;
+        this.products[1].myP = 2800; this.products[1].myQ = 90;
+        this.products[2].myP = 1600; this.products[2].myQ = 130;
+
+        document.getElementById('endingModal').classList.add('hidden');
+        document.getElementById('endingModal').classList.remove('flex');
+        document.getElementById('reportModal').classList.add('hidden');
+        document.getElementById('reportModal').classList.remove('flex');
+
+        this.applyScenarioHeader();
+        this.renderAll();
+      }
+
+      getScenario() {
+        return WEEKLY_SCENARIOS[Math.min(WEEKLY_SCENARIOS.length - 1, this.turn - 1)];
+      }
+
+      getEquilibrium(prod) {
+        const sc = this.getScenario();
+        const dShift = (sc.dShift[prod.id] || 0) + (this.selectedDilemmaId === 'opt_ad' ? 20 : 0);
+        const sShift = sc.sShift[prod.id] || 0;
+        // Demand shift moves P & Q in same direction; Supply shift moves P opposite & Q same
+        const eqP = Math.max(1000, Math.min(4000, Math.round((prod.baseEqP + dShift * 12 - sShift * 12) / 100) * 100));
+        const eqQ = Math.max(20, Math.min(220, Math.round((prod.baseEqQ + dShift * 0.7 + sShift * 0.7) / 10) * 10));
+        return { eqP, eqQ, dShift, sShift };
+      }
+
+      applyScenarioHeader() {
+        const sc = this.getScenario();
+        document.getElementById('newsHeadline').textContent = sc.headline;
+        document.getElementById('newsHint').textContent = `💡 분석 힌트: ${sc.hint}`;
+        document.getElementById('newsConceptBadge').textContent = sc.badge;
+        document.getElementById('btnNextTurn').textContent = this.turn < 10
+          ? `📊 ${this.turn}주차 시장 결산 및 다음 주로 ▶`
+          : `🏆 10주차 최종 결산 및 결과 확인 ▶`;
+      }
+
+      bindEvents() {
+        document.getElementById('btnMute').addEventListener('click', () => {
+          audio.unlock();
+          audio.muted = !audio.muted;
+          document.getElementById('btnMute').textContent = audio.muted ? '🔇' : '🔊';
+        });
+
+        document.getElementById('btnNoteBook').addEventListener('click', () => {
+          audio.unlock();
+          audio.playClick();
+          const m = document.getElementById('noteModal');
+          m.classList.remove('hidden');
+          m.classList.add('flex');
+        });
+        document.getElementById('btnCloseNote').addEventListener('click', () => {
+          const m = document.getElementById('noteModal');
+          m.classList.add('hidden');
+          m.classList.remove('flex');
+        });
+
+        document.getElementById('sliderPrice').addEventListener('input', (e) => {
+          const prod = this.products.find(p => p.id === this.selectedProdId);
+          prod.myP = Number(e.target.value);
+          this.renderProductControls();
+          this.renderMiniCards();
+        });
+
+        document.getElementById('sliderQty').addEventListener('input', (e) => {
+          const prod = this.products.find(p => p.id === this.selectedProdId);
+          prod.myQ = Number(e.target.value);
+          this.renderProductControls();
+          this.renderMiniCards();
+        });
+
+        document.getElementById('btnBuyUsd').addEventListener('click', () => {
+          audio.unlock();
+          const cost = this.fx * 100;
+          if (this.cash >= cost) {
+            this.cash -= cost;
+            this.usd += 100;
+            audio.playCoin();
+            this.renderHUD();
+          }
+        });
+
+        document.getElementById('btnSellUsd').addEventListener('click', () => {
+          audio.unlock();
+          if (this.usd >= 100) {
+            this.usd -= 100;
+            this.cash += this.fx * 100;
+            audio.playCoin();
+            this.renderHUD();
+          }
+        });
+
+        document.getElementById('btnTradeExport').addEventListener('click', () => {
+          audio.unlock();
+          audio.playClick();
+          this.tradeMode = this.tradeMode === 'export' ? null : 'export';
+          this.renderTradeButtons();
+        });
+
+        document.getElementById('btnTradeImport').addEventListener('click', () => {
+          audio.unlock();
+          audio.playClick();
+          this.tradeMode = this.tradeMode === 'import' ? null : 'import';
+          this.renderTradeButtons();
+        });
+
+        document.getElementById('btnNextTurn').addEventListener('click', () => {
+          audio.unlock();
+          this.settleWeek();
+        });
+
+        document.getElementById('btnCloseReport').addEventListener('click', () => {
+          const m = document.getElementById('reportModal');
+          m.classList.add('hidden');
+          m.classList.remove('flex');
+          if (this.turn >= 10) {
+            this.showFinalEnding();
+          } else {
+            this.turn++;
+            const sc = this.getScenario();
+            this.fx = Math.max(1050, Math.min(1600, this.fx + sc.fxDelta));
+            this.fxHistory.push(this.fx);
+            this.cpi = Math.max(90, this.cpi + sc.cpiDelta);
+            this.rate = Math.max(1.0, +(this.rate + sc.rateDelta).toFixed(2));
+            this.tradeMode = null;
+            this.applyScenarioHeader();
+            this.renderAll();
+          }
+        });
+
+        document.getElementById('btnRestart').addEventListener('click', () => {
+          this.resetGame();
+        });
+      }
+
+      renderAll() {
+        this.renderHUD();
+        this.renderProductTabs();
+        this.renderProductControls();
+        this.renderMiniCards();
+        this.renderFxCanvas();
+        this.renderTradeButtons();
+        this.renderDilemmas();
+      }
+
+      renderHUD() {
+        document.getElementById('hudTurn').textContent = this.turn;
+        document.getElementById('hudCash').textContent = `${this.cash.toLocaleString()}원`;
+        document.getElementById('hudFx').textContent = this.fx.toLocaleString();
+        const prevFx = this.fxHistory.length >= 2 ? this.fxHistory[this.fxHistory.length - 2] : this.fx;
+        const diff = this.fx - prevFx;
+        const trendEl = document.getElementById('hudFxTrend');
+        if (diff > 0) {
+          trendEl.textContent = `(▲${diff})`;
+          trendEl.className = 'text-xs ml-1 text-rose-400 font-bold';
+        } else if (diff < 0) {
+          trendEl.textContent = `(▼${Math.abs(diff)})`;
+          trendEl.className = 'text-xs ml-1 text-sky-400 font-bold';
+        } else {
+          trendEl.textContent = '(-)';
+          trendEl.className = 'text-xs ml-1 text-slate-400';
+        }
+        document.getElementById('hudCpi').textContent = this.cpi;
+        document.getElementById('hudRate').textContent = `${this.rate}%`;
+        document.getElementById('hudRep').textContent = `${this.rep}점`;
+        document.getElementById('usdHold').textContent = `$${this.usd.toLocaleString()}`;
+      }
+
+      renderProductTabs() {
+        const box = document.getElementById('productTabs');
+        box.innerHTML = this.products.map(p => {
+          const active = p.id === this.selectedProdId;
+          return `
+            <button data-pid="${p.id}" class="py-2 px-2.5 rounded-xl border text-xs font-bold cursor-pointer transition flex items-center justify-center gap-1.5 ${
+              active
+                ? 'bg-sky-950/90 border-sky-400 text-sky-200 shadow-md'
+                : 'bg-slate-900/75 border-slate-700 text-slate-400 hover:text-slate-200'
+            }">
+              <span>${p.icon}</span>
+              <span class="truncate">${p.name.split(' ')[1] || p.name}</span>
+            </button>
+          `;
+        }).join('');
+
+        box.querySelectorAll('button').forEach(btn => {
+          btn.addEventListener('click', () => {
+            audio.playClick();
+            this.selectedProdId = btn.dataset.pid;
+            this.renderProductTabs();
+            this.renderProductControls();
+          });
+        });
+      }
+
+      renderProductControls() {
+        const prod = this.products.find(p => p.id === this.selectedProdId);
+        const { eqP, eqQ } = this.getEquilibrium(prod);
+        const effUnitCost = Math.max(400, prod.unitCost - (this.selectedDilemmaId === 'opt_tech' ? 200 : 0));
+
+        document.getElementById('prodTitle').textContent = `${prod.icon} ${prod.name}`;
+        document.getElementById('prodCostBadge').textContent = `개당 원가: ${effUnitCost.toLocaleString()}원`;
+        document.getElementById('sliderPrice').value = prod.myP;
+        document.getElementById('lblMyPrice').textContent = `${prod.myP.toLocaleString()}원`;
+        document.getElementById('lblEqHint').textContent = `균형 가격(P*): ${eqP.toLocaleString()}원`;
+
+        document.getElementById('sliderQty').value = prod.myQ;
+        document.getElementById('lblMyQty').textContent = `${prod.myQ}개`;
+        document.getElementById('lblProdCostTotal').textContent = `입고 원가: ${(prod.myQ * effUnitCost).toLocaleString()}원`;
+
+        // Market balance diagnosis
+        const statusBox = document.getElementById('marketStatusBox');
+        const pDiff = prod.myP - eqP;
+        if (Math.abs(pDiff) <= 100 && Math.abs(prod.myQ - eqQ) <= 15) {
+          statusBox.innerHTML = `<span class="text-emerald-400 font-bold">✅ 완벽한 시장 균형!</span> 균형 가격(${eqP.toLocaleString()}원)·거래량(${eqQ}개)에 근접해 최대 수익이 예상됩니다.`;
+        } else if (pDiff > 100) {
+          statusBox.innerHTML = `<span class="text-amber-300 font-bold">⚠️ 초과 공급 위험!</span> 균형 가격보다 비싸서 팔리지 않고 재고가 남을 수 있습니다.`;
+        } else if (pDiff < -100) {
+          statusBox.innerHTML = `<span class="text-rose-300 font-bold">⚠️ 초과 수요 위험!</span> 가격이 너무 낮아 손님이 몰려 조기 품절 및 마진 손실이 발생합니다.`;
+        } else {
+          statusBox.innerHTML = `<span class="text-sky-300 font-bold">ℹ️ 수량 조절 권장:</span> 예상 균형 거래량(Q*)은 약 <strong>${eqQ}개</strong>입니다.`;
+        }
+
+        this.renderSDCanvas(prod, eqP, eqQ);
+      }
+
+      renderSDCanvas(prod, eqP, eqQ) {
+        const c = document.getElementById('sdCanvas');
+        const ctx = c.getContext('2d');
+        ctx.clearRect(0, 0, c.width, c.height);
+
+        const padL = 36, padR = 16, padT = 16, padB = 26;
+        const w = c.width - padL - padR;
+        const h = c.height - padT - padB;
+
+        // Axes
+        ctx.strokeStyle = '#475569';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(padL, padT);
+        ctx.lineTo(padL, padT + h);
+        ctx.lineTo(padL + w, padT + h);
+        ctx.stroke();
+
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '10px "Noto Sans KR"';
+        ctx.fillText('가격(P)', 4, padT + 8);
+        ctx.fillText('거래량(Q)', padL + w - 42, padT + h + 18);
+
+        const toX = (q) => padL + ((q - 20) / 200) * w;
+        const toY = (p) => padT + h - ((p - 1000) / 3000) * h;
+
+        const ex = toX(eqQ);
+        const ey = toY(eqP);
+
+        // Demand Curve (Downward sloping through eq)
+        ctx.strokeStyle = '#fb7185';
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.moveTo(Math.max(padL, ex - 85), Math.max(padT, ey - 68));
+        ctx.lineTo(Math.min(padL + w, ex + 85), Math.min(padT + h, ey + 68));
+        ctx.stroke();
+
+        // Supply Curve (Upward sloping through eq)
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.moveTo(Math.max(padL, ex - 85), Math.min(padT + h, ey + 68));
+        ctx.lineTo(Math.min(padL + w, ex + 85), Math.max(padT, ey - 68));
+        ctx.stroke();
+
+        // Equilibrium Dotted Lines
+        ctx.setLineDash([4, 4]);
+        ctx.strokeStyle = 'rgba(52, 211, 153, 0.55)';
+        ctx.lineWidth = 1.2;
+        ctx.beginPath();
+        ctx.moveTo(padL, ey); ctx.lineTo(ex, ey); ctx.lineTo(ex, padT + h);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        ctx.fillStyle = '#34d399';
+        ctx.beginPath(); ctx.arc(ex, ey, 4.5, 0, Math.PI * 2); ctx.fill();
+
+        // Player's Current (P, Q) Point
+        const mx = toX(prod.myQ);
+        const my = toY(prod.myP);
+        ctx.fillStyle = '#fde047';
+        ctx.beginPath(); ctx.arc(mx, my, 6, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = '#0f172a'; ctx.lineWidth = 1.5; ctx.stroke();
+      }
+
+      renderMiniCards() {
+        const box = document.getElementById('allProductsMini');
+        box.innerHTML = this.products.map(p => {
+          const { eqP, eqQ } = this.getEquilibrium(p);
+          return `
+            <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-2">
+              <div class="font-bold text-slate-200 truncate">${p.icon} ${p.name.split(' ')[1] || p.name}</div>
+              <div class="text-amber-300 mt-0.5">설정: ${p.myP.toLocaleString()}원 / ${p.myQ}개</div>
+              <div class="text-emerald-400">균형: ${eqP.toLocaleString()}원 / ${eqQ}개</div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      renderFxCanvas() {
+        const c = document.getElementById('fxCanvas');
+        const ctx = c.getContext('2d');
+        ctx.clearRect(0, 0, c.width, c.height);
+
+        const hist = this.fxHistory;
+        const minV = Math.min(...hist, 1150) - 30;
+        const maxV = Math.max(...hist, 1450) + 30;
+        const pad = 16;
+        const w = c.width - pad * 2;
+        const h = c.height - pad * 2;
+
+        ctx.strokeStyle = 'rgba(148, 163, 184, 0.2)';
+        ctx.beginPath();
+        ctx.moveTo(pad, pad + h / 2);
+        ctx.lineTo(pad + w, pad + h / 2);
+        ctx.stroke();
+
+        ctx.strokeStyle = '#fbbf24';
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        hist.forEach((v, i) => {
+          const x = pad + (i / Math.max(1, hist.length - 1)) * w;
+          const y = pad + h - ((v - minV) / (maxV - minV)) * h;
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        });
+        ctx.stroke();
+
+        hist.forEach((v, i) => {
+          const x = pad + (i / Math.max(1, hist.length - 1)) * w;
+          const y = pad + h - ((v - minV) / (maxV - minV)) * h;
+          ctx.fillStyle = i === hist.length - 1 ? '#fde047' : '#f59e0b';
+          ctx.beginPath(); ctx.arc(x, y, i === hist.length - 1 ? 4.5 : 3, 0, Math.PI * 2); ctx.fill();
+        });
+      }
+
+      renderTradeButtons() {
+        const btnEx = document.getElementById('btnTradeExport');
+        const btnIm = document.getElementById('btnTradeImport');
+        const hint = document.getElementById('tradeHintText');
+
+        btnEx.className = `flex-1 py-1.5 rounded-lg border text-[11px] font-bold cursor-pointer transition ${
+          this.tradeMode === 'export'
+            ? 'bg-emerald-600 border-emerald-300 text-white'
+            : 'bg-slate-800 border-slate-600 text-slate-300 hover:bg-slate-700'
+        }`;
+        btnIm.className = `flex-1 py-1.5 rounded-lg border text-[11px] font-bold cursor-pointer transition ${
+          this.tradeMode === 'import'
+            ? 'bg-indigo-600 border-indigo-300 text-white'
+            : 'bg-slate-800 border-slate-600 text-slate-300 hover:bg-slate-700'
+        }`;
+
+        if (this.tradeMode === 'export') {
+          hint.textContent = `이번 주 선택: 🚢 수출 계약 (환율 ${this.fx.toLocaleString()}원 기준 · 1,300원 이상일수록 큰 흑자!)`;
+        } else if (this.tradeMode === 'import') {
+          hint.textContent = `이번 주 선택: 📦 수입 계약 (환율 ${this.fx.toLocaleString()}원 기준 · 1,300원 이하일수록 큰 흑자!)`;
+        } else {
+          hint.textContent = '이번 주 무역 선택: 없음 (환율 변동을 보고 수출 또는 수입 계약을 선택하세요)';
+        }
+      }
+
+      renderDilemmas() {
+        const box = document.getElementById('dilemmaChoices');
+        box.innerHTML = DILEMMA_CHOICES.map(ch => {
+          const sel = ch.id === this.selectedDilemmaId;
+          const canAfford = this.cash >= ch.cost;
+          return `
+            <div data-did="${ch.id}" class="p-2.5 rounded-xl border text-xs cursor-pointer transition ${
+              sel
+                ? 'bg-purple-950/75 border-purple-400 text-white'
+                : canAfford
+                ? 'bg-slate-900/75 border-slate-700/80 text-slate-300 hover:border-slate-500'
+                : 'bg-slate-950/50 border-slate-800 text-slate-500 opacity-60'
+            }">
+              <div class="font-bold">${sel ? '🔘' : '⚪'} ${ch.title}</div>
+              <div class="text-[11px] text-slate-400 mt-0.5">${ch.desc}</div>
+            </div>
+          `;
+        }).join('');
+
+        box.querySelectorAll('[data-did]').forEach(el => {
+          el.addEventListener('click', () => {
+            const choice = DILEMMA_CHOICES.find(x => x.id === el.dataset.did);
+            if (!choice || this.cash < choice.cost) return;
+            audio.playClick();
+            this.selectedDilemmaId = choice.id;
+            this.renderDilemmas();
+            this.renderProductControls();
+            this.renderMiniCards();
+          });
+        });
+      }
+
+      settleWeek() {
+        const sc = this.getScenario();
+        let netProfit = 0;
+        const lines = [];
+
+        // 1. Opportunity Cost Choice
+        this.bonusDemand = 0;
+        this.costDiscount = 0;
+        const choice = DILEMMA_CHOICES.find(x => x.id === this.selectedDilemmaId) || DILEMMA_CHOICES[2];
+        if (this.cash >= choice.cost) {
+          this.cash -= choice.cost;
+          netProfit -= choice.cost;
+          const msg = choice.apply(this);
+          lines.push(`<div class="p-2 rounded-xl bg-purple-950/50 border border-purple-500/30"><strong>⚖️ 합리적 선택:</strong> ${msg}</div>`);
+        }
+
+        // 2. Domestic Supply & Demand Store Settlement
+        let storeProfit = 0;
+        for (const prod of this.products) {
+          const { eqP, eqQ } = this.getEquilibrium(prod);
+          const effCost = Math.max(400, prod.unitCost - this.costDiscount);
+          // Actual market demand at player's price
+          const actualDemand = Math.max(10, Math.round(eqQ - (prod.myP - eqP) * 0.045));
+          const soldQty = Math.min(prod.myQ, actualDemand);
+          const unsoldQty = Math.max(0, prod.myQ - soldQty);
+          const shortageQty = Math.max(0, actualDemand - prod.myQ);
+
+          const revenue = soldQty * prod.myP;
+          const prodCost = prod.myQ * effCost;
+          const wastePenalty = unsoldQty * Math.round(effCost * 0.4);
+          const itemNet = revenue - prodCost - wastePenalty;
+          storeProfit += itemNet;
+
+          if (shortageQty > 15) this.rep = Math.max(0, this.rep - 2);
+          else if (Math.abs(prod.myP - eqP) <= 100 && unsoldQty <= 10) this.rep = Math.min(100, this.rep + 2);
+
+          lines.push(`
+            <div class="flex justify-between items-center bg-slate-900/80 border border-slate-800 rounded-xl px-3 py-1.5">
+              <span>${prod.icon} ${prod.name} (판매 ${soldQty}개 / 재고 ${unsoldQty}개)</span>
+              <strong class="${itemNet >= 0 ? 'text-emerald-400' : 'text-rose-400'}">${itemNet >= 0 ? '+' : ''}${itemNet.toLocaleString()}원</strong>
+            </div>
+          `);
+        }
+        this.cash += storeProfit;
+        netProfit += storeProfit;
+
+        // 3. Global Trade Settlement
+        if (this.tradeMode === 'export') {
+          const fxBonus = (this.fx - 1300) * 1800;
+          const tradeNet = 120000 + fxBonus;
+          this.cash += tradeNet;
+          netProfit += tradeNet;
+          lines.push(`
+            <div class="flex justify-between items-center bg-slate-900/80 border border-slate-800 rounded-xl px-3 py-1.5">
+              <span>🚢 수출 계약 정산 (환율 ${this.fx.toLocaleString()}원)</span>
+              <strong class="${tradeNet >= 0 ? 'text-emerald-400' : 'text-rose-400'}">${tradeNet >= 0 ? '+' : ''}${tradeNet.toLocaleString()}원</strong>
+            </div>
+          `);
+        } else if (this.tradeMode === 'import') {
+          const fxBonus = (1300 - this.fx) * 1800;
+          const tradeNet = 120000 + fxBonus;
+          this.cash += tradeNet;
+          netProfit += tradeNet;
+          lines.push(`
+            <div class="flex justify-between items-center bg-slate-900/80 border border-slate-800 rounded-xl px-3 py-1.5">
+              <span>📦 수입 계약 정산 (환율 ${this.fx.toLocaleString()}원)</span>
+              <strong class="${tradeNet >= 0 ? 'text-emerald-400' : 'text-rose-400'}">${tradeNet >= 0 ? '+' : ''}${tradeNet.toLocaleString()}원</strong>
+            </div>
+          `);
+        }
+
+        if (netProfit >= 0) audio.playSuccess();
+        else audio.playAlert();
+
+        document.getElementById('repTitle').textContent = `${this.turn}주차 시장 결산 보고서`;
+        const badge = document.getElementById('repNetBadge');
+        badge.textContent = `${netProfit >= 0 ? '+' : ''}${netProfit.toLocaleString()}원 ${netProfit >= 0 ? '흑자' : '적자'}`;
+        badge.className = `px-3 py-1 rounded-full text-xs font-black border ${
+          netProfit >= 0
+            ? 'bg-emerald-950 text-emerald-300 border-emerald-500/40'
+            : 'bg-rose-950 text-rose-300 border-rose-500/40'
+        }`;
+        document.getElementById('repBreakdown').innerHTML = lines.join('');
+        document.getElementById('repConceptNote').textContent = sc.conceptNote;
+
+        // Render Quiz
+        this.quizAnswered = false;
+        document.getElementById('repQuizStatus').textContent = '1문제 선택';
+        document.getElementById('repQuizStatus').className = 'text-[11px] font-bold text-slate-400';
+        document.getElementById('repQuizQuestion').textContent = sc.quiz.q;
+        const optBox = document.getElementById('repQuizOptions');
+        optBox.innerHTML = sc.quiz.options.map((opt, idx) => `
+          <button data-qidx="${idx}" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-left text-slate-200 cursor-pointer transition">
+            ${idx + 1}. ${opt}
+          </button>
+        `).join('');
+
+        optBox.querySelectorAll('button').forEach(btn => {
+          btn.addEventListener('click', () => {
+            if (this.quizAnswered) return;
+            this.quizAnswered = true;
+            const chosen = Number(btn.dataset.qidx);
+            const correct = sc.quiz.answer;
+            if (chosen === correct) {
+              this.cash += 150000;
+              this.rep = Math.min(100, this.rep + 4);
+              audio.playCoin();
+              btn.className = 'p-2 rounded-xl bg-emerald-800 border border-emerald-400 text-left text-white font-bold';
+              document.getElementById('repQuizStatus').textContent = '⭕ 정답! +150,000원 지급';
+              document.getElementById('repQuizStatus').className = 'text-[11px] font-bold text-emerald-400';
+            } else {
+              audio.playAlert();
+              btn.className = 'p-2 rounded-xl bg-rose-900 border border-rose-400 text-left text-white';
+              optBox.querySelectorAll('button')[correct].className = 'p-2 rounded-xl bg-emerald-900/80 border border-emerald-400 text-left text-emerald-200 font-bold';
+              document.getElementById('repQuizStatus').textContent = '❌ 오답! 해설 확인';
+              document.getElementById('repQuizStatus').className = 'text-[11px] font-bold text-rose-400';
+            }
+            this.renderHUD();
+          });
+        });
+
+        this.renderHUD();
+        const modal = document.getElementById('reportModal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      }
+
+      showFinalEnding() {
+        const totalAsset = this.cash + this.usd * this.fx;
+        let rank = 'B등급 · 성실한 상인';
+        let title = '중견 무역 상인 달성!';
+        let emoji = '🏪';
+        let summary = '시장 가격의 원리와 환율 변동을 이해하고 흑자 경영을 완주했습니다!';
+
+        if (totalAsset >= 4500000 && this.rep >= 75) {
+          rank = 'S등급 · 시장의 신';
+          title = '전설의 경제학자 · 시장의 신!';
+          emoji = '👑';
+          summary = '수요와 공급의 균형, 기회비용, 환율 변동과 물가 정책을 완벽히 꿰뚫어 대한민국 최고의 거상이 되었습니다!';
+        } else if (totalAsset >= 2800000) {
+          rank = 'A등급 · 글로벌 무역왕';
+          title = '탁월한 시장 분석가!';
+          emoji = '🚢';
+          summary = '경제 뉴스 속보를 정확히 해석해 국내 시장과 국제 무역 모두에서 뛰어난 성과를 거두었습니다!';
+        }
+
+        document.getElementById('endEmoji').textContent = emoji;
+        document.getElementById('endGradeTitle').textContent = title;
+        document.getElementById('endSummary').textContent = summary;
+        document.getElementById('endCash').textContent = `${totalAsset.toLocaleString()}원`;
+        document.getElementById('endRep').textContent = `${this.rep}점`;
+        document.getElementById('endRank').textContent = rank;
+
+        const m = document.getElementById('endingModal');
+        m.classList.remove('hidden');
+        m.classList.add('flex');
+      }
+    }
+
+    window.onload = function () {
+      window.marketGame = new MarketGodGame();
+    };
+  </script>
+</body>
+</html>
