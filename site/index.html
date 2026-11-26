@@ -971,7 +971,7 @@ async function waitForNewData() {
   waitingForData = true;
   const before = state.dataUpdatedAt;
   const s = () => admBody.querySelector("#syncStatus");
-  for (let i = 0; i < 16; i++) { // 최대 약 2분
+  for (let i = 0; i < 24; i++) { // 최대 약 3분 (동기화 1분 + 사이트 배포 1분 남짓)
     await new Promise((r) => setTimeout(r, 7500));
     try {
       const res = await fetch(`./games.json?t=${Date.now()}`, { cache: "no-store" });
@@ -998,6 +998,16 @@ try {
 }
 state.loaded = true;
 refreshAll();
+// 방문할 때 자동 반영: 제출 폴더에 새 파일이 있으면 서버가 동기화를 시작하고, 끝나면 화면이 저절로 바뀐다
+fetch("./api/refresh", { cache: "no-store" })
+  .then((r) => (r.ok ? r.json() : {}))
+  .then((r) => {
+    if (r.started || r.running) {
+      toast(r.started ? `새로 올라온 웹앱 ${r.newFiles}개를 가져오는 중이에요. 1~2분 뒤 저절로 나타나요` : "새 웹앱을 가져오는 중이에요. 잠시 뒤 저절로 나타나요");
+      waitForNewData();
+    }
+  })
+  .catch(() => {});
 await fbReady;
 if (fb) { await loadOverrides(); loadCounts(); }
 </script>
