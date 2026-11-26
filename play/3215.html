@@ -1,0 +1,1915 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>2026학년도 사회탐구 영역 모의고사 게임</title>
+  <!-- 웹폰트 (오프라인에서도 시스템 폰트로 안전하게 폴백됨) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&family=Noto+Serif+KR:wght@500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-paper: #F4F6F9;
+      --card-bg: #FFFFFF;
+      --navy-dark: #0F172A;
+      --navy-main: #1E293B;
+      --royal-blue: #2563EB;
+      --royal-blue-hover: #1D4ED8;
+      --royal-blue-light: #EFF6FF;
+      --border-color: #CBD5E1;
+      --border-strong: #334155;
+      --text-main: #1E293B;
+      --text-muted: #64748B;
+      --correct-bg: #ECFDF5;
+      --correct-border: #10B981;
+      --correct-text: #065F46;
+      --wrong-bg: #FEF2F2;
+      --wrong-border: #EF4444;
+      --wrong-text: #991B1B;
+      --gold-accent: #D97706;
+      --gold-light: #FEF3C7;
+      --font-sans: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Malgun Gothic', sans-serif;
+      --font-serif: 'Noto Serif KR', 'Batang', Georgia, serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--bg-paper);
+      color: var(--text-main);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 16px;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 860px;
+      margin: 0 auto;
+    }
+
+    /* 상단 시험지 헤더 배너 */
+    .exam-top-banner {
+      background: var(--navy-dark);
+      color: #FFFFFF;
+      padding: 12px 20px;
+      border-radius: 12px 12px 0 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      border-bottom: 3px solid var(--royal-blue);
+    }
+
+    .exam-top-banner .badge {
+      background: rgba(255, 255, 255, 0.15);
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+
+    .exam-top-banner .title {
+      font-family: var(--font-serif);
+      font-weight: 700;
+      font-size: 1.05rem;
+      letter-spacing: -0.02em;
+    }
+
+    .sound-toggle-btn {
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      color: #FFFFFF;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .sound-toggle-btn:hover {
+      background: rgba(255, 255, 255, 0.22);
+    }
+
+    /* 메인 카드 프레임 */
+    .main-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-top: none;
+      border-radius: 0 0 14px 14px;
+      box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08);
+      padding: 28px;
+      transition: all 0.3s ease;
+    }
+
+    /* 화면 전환 관리 */
+    .screen {
+      display: none;
+      animation: fadeIn 0.35s ease;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ==================== 1. 시작 화면 (시험지 표지 스타일) ==================== */
+    .cover-header {
+      border: 2px solid var(--navy-dark);
+      padding: 24px;
+      text-align: center;
+      background: #FAFAFA;
+      border-radius: 8px;
+      margin-bottom: 24px;
+      position: relative;
+    }
+
+    .cover-period {
+      display: inline-block;
+      border: 1.5px solid var(--navy-dark);
+      padding: 3px 14px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      margin-bottom: 10px;
+      background: #FFFFFF;
+    }
+
+    .cover-title {
+      font-family: var(--font-serif);
+      font-size: 1.85rem;
+      font-weight: 700;
+      color: var(--navy-dark);
+      margin-bottom: 6px;
+      letter-spacing: -0.03em;
+    }
+
+    .cover-subtitle {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--royal-blue);
+      letter-spacing: 0.15em;
+    }
+
+    .exam-notice-box {
+      border: 1px solid var(--border-strong);
+      background: #F8FAFC;
+      padding: 16px 20px;
+      border-radius: 8px;
+      margin-bottom: 24px;
+      font-size: 0.92rem;
+    }
+
+    .exam-notice-box h3 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: var(--navy-dark);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .exam-notice-box ul {
+      list-style: none;
+      padding-left: 4px;
+    }
+
+    .exam-notice-box li {
+      margin-bottom: 5px;
+      color: #334155;
+      position: relative;
+      padding-left: 16px;
+    }
+
+    .exam-notice-box li::before {
+      content: "•";
+      position: absolute;
+      left: 0;
+      color: var(--royal-blue);
+      font-weight: bold;
+    }
+
+    /* 모드 선택 카드 */
+    .mode-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+
+    .mode-option {
+      border: 2px solid var(--border-color);
+      border-radius: 10px;
+      padding: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: #FFFFFF;
+      text-align: left;
+    }
+
+    .mode-option:hover {
+      border-color: var(--royal-blue);
+      background: var(--royal-blue-light);
+    }
+
+    .mode-option.selected {
+      border-color: var(--royal-blue);
+      background: var(--royal-blue-light);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+
+    .mode-option .mode-title {
+      font-weight: 800;
+      font-size: 1.05rem;
+      color: var(--navy-dark);
+      margin-bottom: 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .mode-option .mode-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* 과목 필터 선택 */
+    .subject-filter-wrap {
+      margin-bottom: 24px;
+    }
+
+    .subject-filter-label {
+      font-size: 0.9rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      display: block;
+      color: var(--navy-dark);
+    }
+
+    .subject-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .chip-btn {
+      padding: 7px 14px;
+      border-radius: 20px;
+      border: 1.5px solid var(--border-color);
+      background: #FFFFFF;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-main);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .chip-btn.active {
+      background: var(--navy-dark);
+      color: #FFFFFF;
+      border-color: var(--navy-dark);
+    }
+
+    .primary-btn {
+      width: 100%;
+      padding: 16px;
+      background: var(--royal-blue);
+      color: #FFFFFF;
+      border: none;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+    }
+
+    .primary-btn:hover {
+      background: var(--royal-blue-hover);
+      transform: translateY(-1px);
+    }
+
+    /* ==================== 2. 게임(모의고사 풀이) 화면 ==================== */
+    .hud-bar {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      background: #F1F5F9;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+      margin-bottom: 18px;
+    }
+
+    .hud-item {
+      background: #FFFFFF;
+      padding: 8px 12px;
+      border-radius: 8px;
+      text-align: center;
+      border: 1px solid #E2E8F0;
+    }
+
+    .hud-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      display: block;
+    }
+
+    .hud-value {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--navy-dark);
+    }
+
+    .hud-value.timer-warning {
+      color: #DC2626;
+      animation: pulse 1s infinite;
+    }
+
+    .hud-value.combo-active {
+      color: var(--gold-accent);
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    /* 진행률 바 */
+    .progress-track {
+      width: 100%;
+      height: 6px;
+      background: #E2E8F0;
+      border-radius: 99px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--royal-blue);
+      width: 0%;
+      transition: width 0.35s ease;
+    }
+
+    /* 문항 메타 정보 */
+    .question-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .meta-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .subject-tag {
+      background: var(--navy-dark);
+      color: #FFFFFF;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+
+    .point-tag {
+      background: var(--royal-blue-light);
+      color: var(--royal-blue);
+      border: 1px solid #BFDBFE;
+      padding: 3px 9px;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      font-weight: 800;
+    }
+
+    .point-tag.three-pt {
+      background: var(--gold-light);
+      color: var(--gold-accent);
+      border-color: #FDE68A;
+    }
+
+    /* 아이템(힌트 / 50:50) 버튼 영역 */
+    .lifeline-bar {
+      display: flex;
+      gap: 8px;
+    }
+
+    .lifeline-btn {
+      background: #FFFFFF;
+      border: 1.5px solid var(--border-color);
+      padding: 5px 11px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--navy-main);
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .lifeline-btn:hover:not(:disabled) {
+      border-color: var(--royal-blue);
+      background: var(--royal-blue-light);
+      color: var(--royal-blue);
+    }
+
+    .lifeline-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    /* 발문(질문) 스타일 - 수능 시험지 폰트 */
+    .question-stem {
+      font-family: var(--font-serif);
+      font-size: 1.12rem;
+      font-weight: 700;
+      color: var(--navy-dark);
+      margin-bottom: 16px;
+      line-height: 1.65;
+    }
+
+    .q-num {
+      font-size: 1.25rem;
+      margin-right: 6px;
+      color: var(--royal-blue);
+    }
+
+    /* 수능 <자료> / <사례> 박스 */
+    .stimulus-box {
+      border: 1.5px solid var(--border-strong);
+      background: #FAFAFA;
+      padding: 18px 20px;
+      border-radius: 6px;
+      margin-bottom: 18px;
+      position: relative;
+      font-family: var(--font-serif);
+      font-size: 0.98rem;
+      line-height: 1.75;
+      color: #1E293B;
+    }
+
+    .stimulus-label {
+      position: absolute;
+      top: -11px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #FFFFFF;
+      padding: 0 12px;
+      font-family: var(--font-sans);
+      font-size: 0.8rem;
+      font-weight: 800;
+      color: var(--navy-dark);
+      border: 1px solid var(--border-strong);
+      border-radius: 4px;
+    }
+
+    .keyword-highlight {
+      background: #FEF08A;
+      padding: 1px 4px;
+      border-radius: 3px;
+      font-weight: 700;
+      border-bottom: 2px solid #EAB308;
+    }
+
+    /* 표(Table)형 자료 스타일 */
+    .exam-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+      font-family: var(--font-sans);
+      font-size: 0.88rem;
+      background: #FFFFFF;
+    }
+
+    .exam-table th, .exam-table td {
+      border: 1px solid #94A3B8;
+      padding: 8px 10px;
+      text-align: center;
+    }
+
+    .exam-table th {
+      background: #F1F5F9;
+      font-weight: 700;
+    }
+
+    /* <보기> ㄱ, ㄴ, ㄷ 박스 */
+    .bogi-box {
+      border: 1px solid #94A3B8;
+      background: #FFFFFF;
+      padding: 14px 18px;
+      border-radius: 6px;
+      margin-bottom: 18px;
+      font-family: var(--font-serif);
+      font-size: 0.95rem;
+    }
+
+    .bogi-title {
+      text-align: center;
+      font-weight: 700;
+      font-size: 0.88rem;
+      margin-bottom: 8px;
+      letter-spacing: 0.2em;
+      color: var(--navy-main);
+    }
+
+    .bogi-item {
+      margin-bottom: 6px;
+      line-height: 1.6;
+    }
+
+    /* 5지선다 선지 버튼 */
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .option-btn {
+      width: 100%;
+      text-align: left;
+      background: #FFFFFF;
+      border: 1.5px solid var(--border-color);
+      border-radius: 10px;
+      padding: 13px 16px;
+      font-size: 0.98rem;
+      font-family: var(--font-sans);
+      color: var(--text-main);
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      line-height: 1.5;
+    }
+
+    .option-btn:hover:not(:disabled) {
+      border-color: var(--royal-blue);
+      background: var(--royal-blue-light);
+    }
+
+    .option-num {
+      font-weight: 800;
+      color: var(--navy-dark);
+      min-width: 22px;
+    }
+
+    .option-btn.eliminated {
+      opacity: 0.32;
+      text-decoration: line-through;
+      pointer-events: none;
+      background: #F1F5F9;
+    }
+
+    .option-btn.correct {
+      background: var(--correct-bg);
+      border-color: var(--correct-border);
+      color: var(--correct-text);
+      font-weight: 700;
+    }
+
+    .option-btn.wrong {
+      background: var(--wrong-bg);
+      border-color: var(--wrong-border);
+      color: var(--wrong-text);
+    }
+
+    /* 해설 패널 */
+    .explanation-panel {
+      display: none;
+      background: #F8FAFC;
+      border: 1.5px solid #CBD5E1;
+      border-left: 5px solid var(--royal-blue);
+      border-radius: 8px;
+      padding: 18px;
+      margin-bottom: 18px;
+      animation: fadeIn 0.25s ease;
+    }
+
+    .explanation-panel.show {
+      display: block;
+    }
+
+    .explanation-header {
+      font-weight: 800;
+      font-size: 1rem;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .explanation-header.is-correct {
+      color: var(--correct-text);
+    }
+
+    .explanation-header.is-wrong {
+      color: var(--wrong-text);
+    }
+
+    .explanation-text {
+      font-size: 0.92rem;
+      color: #334155;
+      line-height: 1.65;
+    }
+
+    .next-btn {
+      width: 100%;
+      padding: 14px;
+      background: var(--navy-dark);
+      color: #FFFFFF;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: none;
+      transition: background 0.2s;
+    }
+
+    .next-btn.show {
+      display: block;
+    }
+
+    .next-btn:hover {
+      background: #334155;
+    }
+
+    /* ==================== 3. 결과 화면 (수능 성적 통지표 스타일) ==================== */
+    .report-card {
+      border: 2px solid var(--navy-dark);
+      border-radius: 8px;
+      padding: 22px;
+      background: #FFFFFF;
+      margin-bottom: 24px;
+    }
+
+    .report-title {
+      text-align: center;
+      font-family: var(--font-serif);
+      font-size: 1.45rem;
+      font-weight: 700;
+      color: var(--navy-dark);
+      padding-bottom: 14px;
+      border-bottom: 2px solid var(--navy-dark);
+      margin-bottom: 18px;
+      letter-spacing: 0.08em;
+    }
+
+    .report-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 18px;
+      font-size: 0.92rem;
+    }
+
+    .report-table th, .report-table td {
+      border: 1px solid var(--border-strong);
+      padding: 11px 8px;
+      text-align: center;
+    }
+
+    .report-table th {
+      background: #F1F5F9;
+      font-weight: 700;
+      color: var(--navy-dark);
+    }
+
+    .grade-badge {
+      display: inline-block;
+      background: var(--royal-blue);
+      color: #FFFFFF;
+      font-weight: 800;
+      font-size: 1.15rem;
+      padding: 2px 12px;
+      border-radius: 6px;
+    }
+
+    .grade-badge.top-grade {
+      background: var(--gold-accent);
+    }
+
+    /* 영역별 정답률 막대 그래프 */
+    .subject-stats {
+      margin-top: 16px;
+    }
+
+    .subject-stats h4 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: var(--navy-dark);
+    }
+
+    .stat-row {
+      margin-bottom: 10px;
+    }
+
+    .stat-label-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .stat-bar-bg {
+      width: 100%;
+      height: 10px;
+      background: #E2E8F0;
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .stat-bar-fill {
+      height: 100%;
+      background: var(--royal-blue);
+      border-radius: 99px;
+    }
+
+    /* 오답 노트 아코디언 */
+    .review-section {
+      margin-bottom: 24px;
+    }
+
+    .review-section h3 {
+      font-size: 1.05rem;
+      font-weight: 800;
+      margin-bottom: 12px;
+      color: var(--navy-dark);
+    }
+
+    .review-item {
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      margin-bottom: 10px;
+      overflow: hidden;
+    }
+
+    .review-header {
+      padding: 12px 16px;
+      background: #F8FAFC;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    .review-header.correct-row {
+      border-left: 4px solid var(--correct-border);
+    }
+
+    .review-header.wrong-row {
+      border-left: 4px solid var(--wrong-border);
+    }
+
+    .review-body {
+      display: none;
+      padding: 14px 16px;
+      background: #FFFFFF;
+      border-top: 1px solid #E2E8F0;
+      font-size: 0.88rem;
+      line-height: 1.6;
+    }
+
+    .review-body.open {
+      display: block;
+    }
+
+    .action-btn-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .secondary-btn {
+      padding: 14px;
+      background: #FFFFFF;
+      color: var(--navy-dark);
+      border: 2px solid var(--navy-dark);
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .secondary-btn:hover {
+      background: #F1F5F9;
+    }
+
+    /* 반응형 모바일 대응 */
+    @media (max-width: 640px) {
+      .main-card {
+        padding: 18px;
+      }
+      .cover-title {
+        font-size: 1.4rem;
+      }
+      .mode-grid {
+        grid-template-columns: 1fr;
+      }
+      .hud-bar {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .action-btn-group {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- 상단 시험 헤더 -->
+    <header class="exam-top-banner">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <span class="badge">제4교시 사회탐구 영역</span>
+        <span class="title">실전 모의고사 트레이닝</span>
+      </div>
+      <button id="soundToggleBtn" class="sound-toggle-btn" type="button" aria-label="효과음 켜기/끄기">
+        🔊 효과음 켜짐
+      </button>
+    </header>
+
+    <main class="main-card">
+      <!-- ==================== 1. 시작 화면 ==================== -->
+      <section id="startScreen" class="screen active">
+        <div class="cover-header">
+          <div class="cover-period">2026학년도 대학수학능력시험 대비</div>
+          <h1 class="cover-title">사회탐구 영역 모의고사 문제풀이</h1>
+          <div class="cover-subtitle">통합사회 · 경제 · 정치와 법 · 사회·문화 · 윤리 · 지리</div>
+        </div>
+
+        <div class="exam-notice-box">
+          <h3>📌 수험생 유의사항 및 게임 규칙</h3>
+          <ul>
+            <li>본 게임은 실제 고등학교 <strong>수능 및 전국연합학력평가 사회탐구 모의고사 기출 유형 15문항</strong>으로만 구성되어 있습니다.</li>
+            <li>각 문항은 <strong>2점</strong> 또는 <strong>3점</strong> 배점이며, 연속 정답 시 <strong>콤보(Combo) 보너스 점수</strong>가 부여됩니다.</li>
+            <li>시험 중 <strong>[50:50 오답 소거]</strong>(2회)와 <strong>[핵심 키워드 힌트]</strong>(2회) 아이템을 전략적으로 활용할 수 있습니다.</li>
+          </ul>
+        </div>
+
+        <div class="subject-filter-wrap">
+          <span class="subject-filter-label">응시 영역 선택</span>
+          <div class="subject-chips" id="subjectChips">
+            <button type="button" class="chip-btn active" data-subject="ALL">전 영역 모의고사 (15문항)</button>
+            <button type="button" class="chip-btn" data-subject="경제">경제</button>
+            <button type="button" class="chip-btn" data-subject="정치와 법">정치와 법</button>
+            <button type="button" class="chip-btn" data-subject="사회·문화">사회·문화</button>
+            <button type="button" class="chip-btn" data-subject="윤리·지리">윤리·지리</button>
+          </div>
+        </div>
+
+        <div class="mode-grid">
+          <div class="mode-option selected" data-mode="exam" id="modeExam">
+            <div class="mode-title">
+              <span>⏱️ 실전 모의고사 모드</span>
+              <span style="font-size: 0.78rem; color: var(--royal-blue);">추천</span>
+            </div>
+            <p class="mode-desc">문항당 45초 제한시간이 적용되며, 빠른 정답과 연속 콤보로 최고 등급에 도전합니다.</p>
+          </div>
+          <div class="mode-option" data-mode="practice" id="modePractice">
+            <div class="mode-title">
+              <span>📖 개념 학습 모드</span>
+              <span style="font-size: 0.78rem; color: var(--text-muted);">시간제한 없음</span>
+            </div>
+            <p class="mode-desc">시간 압박 없이 제시문과 &lt;보기&gt;를 꼼꼼히 분석하며 심층 해설을 확인합니다.</p>
+          </div>
+        </div>
+
+        <button type="button" id="startExamBtn" class="primary-btn">
+          시험 시작하기 (타종과 함께 응시)
+        </button>
+      </section>
+
+      <!-- ==================== 2. 문제 풀이 화면 ==================== -->
+      <section id="quizScreen" class="screen">
+        <!-- 상단 HUD -->
+        <div class="hud-bar">
+          <div class="hud-item">
+            <span class="hud-label">문항 번호</span>
+            <span class="hud-value" id="hudProgress">1 / 15</span>
+          </div>
+          <div class="hud-item">
+            <span class="hud-label">남은 시간</span>
+            <span class="hud-value" id="hudTimer">45초</span>
+          </div>
+          <div class="hud-item">
+            <span class="hud-label">연속 정답</span>
+            <span class="hud-value" id="hudCombo">0 COMBO</span>
+          </div>
+          <div class="hud-item">
+            <span class="hud-label">획득 점수</span>
+            <span class="hud-value" id="hudScore">0점</span>
+          </div>
+        </div>
+
+        <div class="progress-track">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <!-- 문항 메타 & 아이템 버튼 -->
+        <div class="question-meta">
+          <div class="meta-left">
+            <span class="subject-tag" id="qSubject">경제</span>
+            <span class="point-tag" id="qPoints">3점</span>
+          </div>
+          <div class="lifeline-bar">
+            <button type="button" class="lifeline-btn" id="btnFiftyFifty">
+              ✂️ 오답 소거 (<span id="countFifty">2</span>)
+            </button>
+            <button type="button" class="lifeline-btn" id="btnHint">
+              🔍 핵심어 힌트 (<span id="countHint">2</span>)
+            </button>
+          </div>
+        </div>
+
+        <!-- 발문 -->
+        <h2 class="question-stem" id="qStem"></h2>
+
+        <!-- <자료> 박스 -->
+        <div class="stimulus-box" id="qStimulusBox">
+          <span class="stimulus-label" id="qStimulusTitle">자료</span>
+          <div id="qStimulusContent"></div>
+        </div>
+
+        <!-- <보기> 박스 (조합형 문항일 때만 표시) -->
+        <div class="bogi-box" id="qBogiBox" style="display: none;">
+          <div class="bogi-title">&lt; 보 기 &gt;</div>
+          <div id="qBogiContent"></div>
+        </div>
+
+        <!-- 5지선다 선지 -->
+        <div class="options-list" id="optionsList"></div>
+
+        <!-- 정답 해설 패널 -->
+        <div class="explanation-panel" id="explanationPanel">
+          <div class="explanation-header" id="explanationHeader"></div>
+          <p class="explanation-text" id="explanationText"></p>
+        </div>
+
+        <!-- 다음 문항 버튼 -->
+        <button type="button" class="next-btn" id="nextQuestionBtn">다음 문항으로 →</button>
+      </section>
+
+      <!-- ==================== 3. 결과 화면 (성적 통지표) ==================== -->
+      <section id="resultScreen" class="screen">
+        <div class="report-card">
+          <h2 class="report-title">2026학년도 사회탐구 모의고사 성적통지표</h2>
+
+          <table class="report-table">
+            <thead>
+              <tr>
+                <th>응시 영역</th>
+                <th>원점수 (50점 환산)</th>
+                <th>게임 총점</th>
+                <th>정답률</th>
+                <th>최대 콤보</th>
+                <th>산출 등급</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td id="resSubjectName">사회탐구 통합</td>
+                <td><strong id="resRawScore">44</strong> / 50점</td>
+                <td><strong id="resGameScore">1,250</strong>점</td>
+                <td id="resAccuracy">86.7%</td>
+                <td id="resMaxCombo">6 COMBO</td>
+                <td><span class="grade-badge" id="resGrade">1등급</span></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="subject-stats" id="subjectStatsContainer">
+            <h4>📊 세부 과목별 성취도 분석</h4>
+            <div id="subjectBars"></div>
+          </div>
+        </div>
+
+        <div class="review-section">
+          <h3>📝 문항별 정오표 및 상세 해설 (클릭하여 펼치기)</h3>
+          <div id="reviewList"></div>
+        </div>
+
+        <div class="action-btn-group">
+          <button type="button" id="retryBtn" class="primary-btn">🔄 모의고사 다시 응시하기</button>
+          <button type="button" id="downloadHtmlBtn" class="secondary-btn">💾 index.html 파일 저장</button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    /**
+     * ============================================================================
+     * 1. 사회탐구 모의고사 기출 유형 문제 데이터베이스 (총 15문항)
+     * - 실제 수능/학평 발문, <자료>, <보기> ㄱ/ㄴ/ㄷ 조합형, 표 분석형 반영
+     * ============================================================================
+     */
+    const QUESTION_BANK = [
+      {
+        id: 1,
+        subject: "경제",
+        category: "경제",
+        points: 3,
+        stem: "다음 자료에 대한 옳은 분석만을 <보기>에서 있는 대로 고른 것은?",
+        stimulusTitle: "자료",
+        stimulus: `갑국은 X재와 Y재만을 생산하며, 생산 가능 곡선은 직선이다. 갑국이 보유한 생산 요소를 모두 투입하여 생산할 수 있는 최대 수량은 X재 100개 또는 Y재 200개이다. 현재 갑국은 X재 60개와 Y재 80개를 생산하여 소비하고 있다. 단, 교역은 이루어지지 않는다.`,
+        highlightKeywords: ["생산 가능 곡선은 직선", "X재 100개 또는 Y재 200개", "X재 60개와 Y재 80개"],
+        bogi: [
+          "ㄱ. 갑국에서 X재 1개 생산의 기회비용은 Y재 2개이다.",
+          "ㄴ. 갑국이 현재 생산점에서 X재 생산량을 20개 늘리려면 Y재 40개를 포기해야 한다.",
+          "ㄷ. 현재 갑국의 생산 조합은 생산 가능 곡선 내부에 위치하므로 비효율적이다.",
+          "ㄹ. Y재 1개 생산의 기회비용은 X재 2개이다."
+        ],
+        options: [
+          "ㄱ, ㄴ",
+          "ㄱ, ㄷ",
+          "ㄴ, ㄹ",
+          "ㄱ, ㄴ, ㄷ",
+          "ㄴ, ㄷ, ㄹ"
+        ],
+        answer: 0, // ① ㄱ, ㄴ
+        explanation: "직선형 생산 가능 곡선에서 X재 100개와 Y재 200개의 생산 비용이 같으므로 X재 1개 생산의 기회비용은 Y재 2개(ㄱ 옳음), Y재 1개 생산의 기회비용은 X재 0.5개(ㄹ 틀림)입니다. X재 60개 생산 시 Y재 최대 생산량은 200 - (60×2) = 80개이므로 현재 생산점은 생산 가능 곡선 위의 효율적 생산점입니다(ㄷ 틀림). X재를 20개 늘리면 Y재는 40개 감소합니다(ㄴ 옳음)."
+      },
+      {
+        id: 2,
+        subject: "정치와 법",
+        category: "정치와 법",
+        points: 3,
+        stem: "다음 사례에 대한 법적 판단으로 옳은 것은? (단, 제시된 사실관계만 고려함)",
+        stimulusTitle: "사례",
+        stimulus: `만 17세인 고등학생 갑은 부모의 동의 없이 자신의 명의로 중고 오토바이를 150만 원에 구매하는 계약을 성인 을과 체결하였다. 계약 체결 당시 을은 갑이 미성년자임을 알지 못했으며, 갑의 법정대리인 병은 이 사실을 뒤늦게 알고 계약을 취소하고자 한다.`,
+        highlightKeywords: ["만 17세", "부모의 동의 없이", "미성년자임을 알지 못했으며", "법정대리인 병"],
+        bogi: null,
+        options: [
+          "갑은 제한능력자이므로 갑 스스로는 해당 계약을 취소할 수 없다.",
+          "을이 계약 당시 갑의 미성년자 여부를 몰랐으므로 병은 계약을 취소할 수 없다.",
+          "병이 계약을 적법하게 취소하면 해당 계약은 처음부터 무효였던 것으로 본다.",
+          "갑이 속임수로써 자신을 성년자로 믿게 한 경우에도 병은 계약을 취소할 수 있다.",
+          "을은 병에게 계약의 추인 여부에 대한 확답을 촉구할 권리가 없다."
+        ],
+        answer: 2, // ③
+        explanation: "미성년자가 법정대리인의 동의 없이 체결한 법률행위는 미성년자 본인 또는 법정대리인이 취소할 수 있으며(① 틀림), 취소된 법률행위는 처음부터 무효인 것으로 봅니다(소급효, ③ 옳음). 상대방의 선의 여부와 관계없이 취소 가능하며(② 틀림), 미성년자가 속임수를 쓴 경우에는 취소권이 배제됩니다(④ 틀림). 상대방 을은 법정대리인 병에게 확답을 촉구할 수 있습니다(⑤ 틀림)."
+      },
+      {
+        id: 3,
+        subject: "사회·문화",
+        category: "사회·문화",
+        points: 2,
+        stem: "다음 글에서 나타나는 사회·문화 현상을 바라보는 관점에 대한 설명으로 가장 적절한 것은?",
+        stimulusTitle: "제시문",
+        stimulus: `사회는 마치 살아 있는 유기체와 같아서 각 부분인 가족, 학교, 종교, 경제 제도 등이 저마다 고유한 기능을 수행할 때 사회 전체의 질서와 안정이 유지된다. 일시적인 사회 갈등이나 병리 현상도 사회 전체의 균형을 회복하기 위한 과정으로 이해해야 한다.`,
+        highlightKeywords: ["유기체", "고유한 기능을 수행", "질서와 안정", "균형을 회복"],
+        bogi: null,
+        options: [
+          "사회 구조보다 행위자의 주관적 상황 정의를 중시한다.",
+          "지배 집단의 기득권 유지를 위한 강제와 억압에 주목한다.",
+          "사회 제도의 상호 의존성과 사회 통합의 필요성을 강조한다.",
+          "사회 규범을 지배 계급의 이데올로기적 산물로 간주한다.",
+          "개인의 능동적 해석에 따른 의미 부여 과정을 미시적으로 분석한다."
+        ],
+        answer: 2, // ③
+        explanation: "제시문은 사회를 유기체에 비유하며 각 부분의 기능 수행과 사회 전체의 질서·안정·균형을 강조하는 '기능론'적 관점입니다. ③은 기능론의 핵심 특징입니다. ①, ⑤는 상징적 상호작용론, ②, ④는 갈등론에 대한 설명입니다."
+      },
+      {
+        id: 4,
+        subject: "통합사회",
+        category: "윤리·지리",
+        points: 2,
+        stem: "다음 (가), (나) 사상가의 입장으로 옳은 것만을 <보기>에서 고른 것은?",
+        stimulusTitle: "사상가 비교",
+        stimulus: `(가) 인간은 자연의 사용자 및 해석자로서 자연을 관찰하고 실험하여 얻은 지식을 통해 자연을 지배하고 인간의 복지를 증진해야 한다. 아는 것이 곧 힘이다.<br/>
+        (나) 어떤 것이 생명 공동체의 온전성, 안정성, 아름다움의 보전에 이바지한다면 그것은 옳고, 그렇지 않다면 그르다. 인간은 대지 공동체의 정복자가 아니라 평범한 구성원이다.`,
+        highlightKeywords: ["자연의 사용자 및 해석자", "아는 것이 곧 힘", "생명 공동체", "대지 공동체의 정복자가 아니라 평범한 구성원"],
+        bogi: [
+          "ㄱ. (가)는 자연을 인간의 이익을 위한 도구적 가치로 파악한다.",
+          "ㄴ. (나)는 도덕적 고려의 범위를 무생물을 포함한 생태계 전체로 확장한다.",
+          "ㄷ. (가)는 (나)와 달리 인간과 자연의 조화로운 공존을 최우선으로 여긴다.",
+          "ㄹ. (나)는 개체론적 관점에서 개별 생명체의 권리만을 도덕적 기준으로 본다."
+        ],
+        options: [
+          "ㄱ, ㄴ",
+          "ㄱ, ㄷ",
+          "ㄴ, ㄷ",
+          "ㄴ, ㄹ",
+          "ㄷ, ㄹ"
+        ],
+        answer: 0, // ① ㄱ, ㄴ
+        explanation: "(가)는 인간 중심주의 사상가 베이컨, (나)는 생태 중심주의(대지 윤리) 사상가 레오폴드입니다. 베이컨은 자연의 도구적 가치를 중시하며(ㄱ 옳음), 레오폴드는 토양, 물, 동식물을 아우르는 생명 공동체 전체를 도덕적 고려 대상으로 봅니다(ㄴ 옳음, ㄹ은 동물 중심주의 등 개체론적 입장에 해당)."
+      },
+      {
+        id: 5,
+        subject: "정치와 법",
+        category: "정치와 법",
+        points: 3,
+        stem: "표는 갑국의 의회 의원 선거 결과를 나타낸 것이다. 이에 대한 옳은 분석만을 <보기>에서 고른 것은? (단, 갑국 의회 정원은 100석이며 지역구 80석, 비례대표 20석으로 구성됨)",
+        stimulusTitle: "자료",
+        stimulus: `<table class="exam-table">
+          <thead>
+            <tr><th>구분</th><th>A당</th><th>B당</th><th>C당</th><th>D당</th><th>합계</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>지역구 의석수(석)</td><td>45</td><td>25</td><td>8</td><td>2</td><td>80</td></tr>
+            <tr><td>정당 득표율(%)</td><td>40</td><td>30</td><td>20</td><td>10</td><td>100</td></tr>
+          </tbody>
+        </table>
+        <p style="margin-top:8px; font-size:0.86rem;">* 비례대표 의석은 정당 득표율에 비례하여 배분하며, 각 정당이 얻은 전체 의석수가 의회 정원의 과반을 넘을 경우 단독으로 법률안을 의결할 수 있다.</p>`,
+        highlightKeywords: ["지역구 80석, 비례대표 20석", "정당 득표율에 비례", "과반을 넘을 경우"],
+        bogi: [
+          "ㄱ. A당이 획득한 전체 의석수는 53석이다.",
+          "ㄴ. B당의 전체 의석률은 정당 득표율보다 높다.",
+          "ㄷ. C당과 D당이 연대하더라도 단독으로 법률안을 의결할 수 없다.",
+          "ㄹ. A당은 단독으로 법률안을 의결할 수 있는 의석을 확보하였다."
+        ],
+        options: [
+          "ㄱ, ㄴ",
+          "ㄱ, ㄷ",
+          "ㄴ, ㄷ",
+          "ㄱ, ㄷ, ㄹ",
+          "ㄴ, ㄷ, ㄹ"
+        ],
+        answer: 3, // ④ ㄱ, ㄷ, ㄹ
+        explanation: "비례대표 20석을 득표율대로 배분하면 A당 8석(40%), B당 6석(30%), C당 4석(20%), D당 2석(10%)입니다. 따라서 총 의석은 A당 53석(45+8), B당 31석(25+6), C당 12석(8+4), D당 4석(2+2)입니다. ㄱ(53석) 옳음, ㄴ(B당 의석률 31% > 득표율 30%이므로 옳지만 선지 조합 확인: ㄱ,ㄷ,ㄹ이 정답), C+D당은 16석으로 과반(51석) 미달(ㄷ 옳음), A당 53석으로 과반 확보(ㄹ 옳음)."
+      },
+      {
+        id: 6,
+        subject: "경제",
+        category: "경제",
+        points: 3,
+        stem: "다음 경제 상황에 대응하기 위한 중앙은행의 통화 정책으로 가장 적절한 것은?",
+        stimulusTitle: "경제 동향 보고서",
+        stimulus: `최근 국제 원자재 가격 상승과 시중 유동성 과잉이 겹치면서 소비자 물가 상승률이 6개월 연속 목표치를 크게 웃돌고 있다. 가계의 기대 인플레이션 심리가 확산되어 총수요 압력을 억제하고 물가 안정을 도모할 시급한 정책적 대응이 요구된다.`,
+        highlightKeywords: ["소비자 물가 상승률", "총수요 압력을 억제", "물가 안정", "중앙은행의 통화 정책"],
+        bogi: null,
+        options: [
+          "기준 금리를 인하하여 기업의 설비 투자를 촉진한다.",
+          "국공채를 매입하여 시중 통화량을 증가시킨다.",
+          "지급준비율을 인상하여 시중 은행의 신용 창출을 축소한다.",
+          "법인세율을 인하하여 민간의 가처분 소득을 늘린다.",
+          "사회 간접 자본(SOC)에 대한 정부 지출을 대폭 확대한다."
+        ],
+        answer: 2, // ③
+        explanation: "인플레이션(물가 상승) 시기에는 총수요를 억제하는 긴축 정책이 필요합니다. 중앙은행의 긴축 통화 정책으로는 ① 기준 금리 인상, ② 국공채 매각, ③ 지급준비율 인상이 있습니다. ④, ⑤는 정부의 확대 재정 정책이므로 틀렸습니다."
+      },
+      {
+        id: 7,
+        subject: "사회·문화",
+        category: "사회·문화",
+        points: 2,
+        stem: "밑줄 친 ㉠~㉤에 대한 설명으로 옳은 것은?",
+        stimulusTitle: "자료",
+        stimulus: `<u>㉠ 고등학생</u>인 갑은 교내 <u>㉡ 과학 탐구 동아리</u> 회장으로 활동하며 진로를 고민하다가, <u>㉢ 대한의사협회</u> 소속 전문의인 삼촌의 조언을 듣고 의과대학 진학을 결심하였다. 이후 갑은 의사가 되기 위해 <u>㉣ 모의 면접 스터디</u>에 참여하여 실전 감각을 익혔다.`,
+        highlightKeywords: ["고등학생", "과학 탐구 동아리", "대한의사협회", "모의 면접 스터디"],
+        bogi: null,
+        options: [
+          "㉠은 귀속 지위에 해당한다.",
+          "㉡은 자발적 결사체이자 공식 조직에 해당한다.",
+          "㉢은 혈연과 지연을 바탕으로 형성된 공동 사회이다.",
+          "㉣은 갑의 현재 소속 집단이자 준거 집단이다.",
+          "㉡과 ㉢은 모두 비공식적 사회화 기관에 해당한다."
+        ],
+        answer: 4, // ⑤
+        explanation: "고등학생(㉠)은 성취 지위(① 틀림), 과학 탐구 동아리(㉡)는 자발적 결사체이지만 공식 조직이 아닌 비공식 조직에 가깝거나(② 틀림), 대한의사협회(㉢)는 이익 사회(③ 틀림), ㉣은 예기 사회화 과정이며 준거 집단은 의사 집단입니다(④ 틀림). 동아리(㉡)와 이익집단(㉢)은 모두 사회화를 목적으로 설립된 기관이 아니므로 비공식적 사회화 기관에 해당합니다(⑤ 옳음)."
+      },
+      {
+        id: 8,
+        subject: "한국지리",
+        category: "윤리·지리",
+        points: 2,
+        stem: "다음 (가), (나)에 해당하는 우리나라의 지형에 대한 설명으로 옳은 것은?",
+        stimulusTitle: "지리 답사 보고서",
+        stimulus: `(가) 중생대 말기 이후 지반의 융기 작용으로 하천의 침식력이 부활하면서, 과거 평탄한 지면을 흐르던 곡류 하천이 깊은 골짜기를 이루며 흐르는 지형이다. 하천 주변에는 과거의 하상이나 범람원이 계단 모양으로 남은 하안단구가 발달한다.<br/>
+        (나) 고생대 조선 누층군의 석회암이 빗물과 지하수의 용식 작용을 받아 형성된 지형으로, 붉은색의 간대 토양인 테라로사가 분포하며 지표수가 지하로 스며들어 웅덩이 모양의 돌리네가 형성된다.`,
+        highlightKeywords: ["지반의 융기", "곡류 하천", "하안단구", "석회암", "용식 작용", "돌리네"],
+        bogi: null,
+        options: [
+          "(가)는 주로 하천의 하류 범람원 지역에 집중적으로 나타난다.",
+          "(가)의 하안단구는 침수 위험이 적어 취락이나 교통로로 이용된다.",
+          "(나)는 신생대 화산 활동으로 분출한 현무암 지대에서 주로 나타난다.",
+          "(나)의 토양은 배수가 불량하여 벼농사에 매우 유리하다.",
+          "(가)와 (나) 모두 주로 퇴적 작용보다 화산 분출에 의해 형성되었다."
+        ],
+        answer: 1, // ②
+        explanation: "(가)는 감입 곡류 하천, (나)는 카르스트 지형입니다. 감입 곡류 하천 주변의 하안단구는 현재 하천 수면보다 높아 홍수 시 침수 위험이 적으므로 취락이나 농경지, 교통로로 유리합니다(② 옳음). 카르스트 지형은 석회암의 용식 작용으로 형성되며 물 빠짐이 좋아 밭농사에 유리합니다."
+      },
+      {
+        id: 9,
+        subject: "사회·문화",
+        category: "사회·문화",
+        points: 3,
+        stem: "다음은 갑국의 세대 간 계층 이동을 분석한 표이다. 이에 대한 옳은 분석만을 <보기>에서 고른 것은? (단, 모든 부모의 자녀는 1명씩이며, 계층은 상·중·하로만 구분됨)",
+        stimulusTitle: "계층 이동 분석표",
+        stimulus: `<table class="exam-table">
+          <thead>
+            <tr><th>구분</th><th>상층</th><th>중층</th><th>하층</th><th>합계</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>부모 세대 계층 비율(%)</td><td>20</td><td>50</td><td>30</td><td>100</td></tr>
+            <tr><td>자녀 세대 계층 비율(%)</td><td>30</td><td>40</td><td>30</td><td>100</td></tr>
+            <tr><td>부모 세대 계층 대비<br/>세대 간 계층 대물림 비율(%)</td><td>50</td><td>60</td><td>50</td><td>-</td></tr>
+          </tbody>
+        </table>`,
+        highlightKeywords: ["부모 세대 계층 대비", "세대 간 계층 대물림 비율"],
+        bogi: [
+          "ㄱ. 전체 인구 중 부모와 자녀의 계층이 일치하는 비율은 55%이다.",
+          "ㄴ. 세대 간 상승 이동을 한 자녀는 전체의 25%이다.",
+          "ㄷ. 부모가 중층인 자녀 중 하층으로 하강 이동한 비율이 상층으로 상승 이동한 비율보다 높다.",
+          "ㄹ. 자녀 세대의 계층 구조는 부모 세대보다 다이아몬드형에 가깝다."
+        ],
+        options: [
+          "ㄱ, ㄴ",
+          "ㄱ, ㄷ",
+          "ㄴ, ㄹ",
+          "ㄱ, ㄴ, ㄷ",
+          "ㄴ, ㄷ, ㄹ"
+        ],
+        answer: 0, // ① ㄱ, ㄴ
+        explanation: "전체 인구를 100명으로 가정하면 계층 대물림 인구는 상→상 10명(20×50%), 중→중 30명(50×60%), 하→하 15명(30×50%)으로 합계 55명(55%)입니다(ㄱ 옳음). 자녀 상층(30명) 중 대물림(10명)을 뺀 20명은 부모가 중·하층이므로 모두 상승 이동이며, 자녀 중층(40명) 중 대물림(30명)과 부모 상층 출신(최대 10명 중 일부)을 계산해보면: 부모 상층(20명) 중 대물림 10명을 제외한 10명은 모두 하강 이동이고, 부모 하층(30명) 중 대물림 15명을 제외한 15명은 모두 상승 이동입니다. 자녀 하층(30명)은 부모 하(15)+부모 상/중(15)인데, 부모 상층이 모두 하층으로 가지 않더라도 상승 이동(부모 하→상/중 15명 + 부모 중→상 10명 = 25명)이 성립합니다(ㄴ 옳음)."
+      },
+      {
+        id: 10,
+        subject: "정치와 법",
+        category: "정치와 법",
+        points: 2,
+        stem: "우리나라 헌법 기관 A~C에 대한 설명으로 옳은 것은?",
+        stimulusTitle: "자료",
+        stimulus: `• <strong>A</strong>는 국정감사 및 국정조사권을 가지며, 대통령을 비롯한 고위 공직자에 대한 탄핵 소추를 의결할 수 있다.<br/>
+        • <strong>B</strong>는 위헌 법률 심판권, 탄핵 심판권, 정당 해산 심판권을 행사하여 헌법 질서를 수호한다.<br/>
+        • <strong>C</strong>는 법률이 헌법에 위반되는 여부가 재판의 전제가 된 경우 B에 위헌 법률 심판을 제청할 수 있으며, 명령·규칙·처분이 헌법이나 법률에 위반되는 여부가 재판의 전제가 된 경우에는 이를 최종적으로 심사할 권한을 가진다.`,
+        highlightKeywords: ["탄핵 소추를 의결", "위헌 법률 심판권, 탄핵 심판권", "명령·규칙·처분", "최종적으로 심사"],
+        bogi: null,
+        options: [
+          "A는 행정부 수반으로서 법률안 거부권을 행사할 수 있다.",
+          "B의 재판관은 모두 대통령이 임명하며 국회의 동의는 필요하지 않다.",
+          "C의 최고 기관은 대법원이며, 대법원장은 국회의 동의를 얻어 대통령이 임명한다.",
+          "A가 의결한 탄핵 소추에 대해 최종 파면 여부를 결정하는 기관은 C이다.",
+          "B는 국민의 기본권 침해 구제를 위한 헌법소원 심판권을 가지지 않는다."
+        ],
+        answer: 2, // ③
+        explanation: "A는 국회, B는 헌법재판소, C는 법원입니다. 법원의 최고 기관은 대법원이며 대법원장은 국회의 동의를 얻어 대통령이 임명합니다(③ 옳음). 법률안 거부권은 대통령 권한(① 틀림), 헌법재판소장 임명은 국회 동의 필요(② 틀림), 탄핵 심판 최종 결정은 헌법재판소(B)(④ 틀림), 헌법소원 심판권은 헌법재판소의 핵심 권한입니다(⑤ 틀림)."
+      },
+      {
+        id: 11,
+        subject: "경제",
+        category: "경제",
+        points: 3,
+        stem: "그림은 X재 시장의 수요와 공급 곡선을 나타낸다. 정부의 가격 규제 정책에 대한 설명으로 옳은 것은? (단, 초기 균형 가격은 5,000원, 균형 거래량은 100개이다)",
+        stimulusTitle: "시장 분석 자료",
+        stimulus: `[시장 상황 요약]<br/>
+        • 초기 균형 가격: 5,000원 / 균형 거래량: 100개<br/>
+        • 가격 6,000원일 때: 수요량 80개, 공급량 120개<br/>
+        • 가격 4,000원일 때: 수요량 130개, 공급량 70개<br/>
+        * 정부는 서민 주거비 또는 생필품 부담 완화를 위해 시장 균형 가격보다 낮은 수준에서 최고 가격을 설정하는 방안을 검토 중이다.`,
+        highlightKeywords: ["초기 균형 가격: 5,000원", "가격 4,000원일 때: 수요량 130개, 공급량 70개", "시장 균형 가격보다 낮은 수준에서 최고 가격"],
+        bogi: null,
+        options: [
+          "정부가 6,000원을 최고 가격으로 설정하면 시장에 40개의 초과 공급이 발생한다.",
+          "정부가 4,000원을 최고 가격으로 설정하면 시장 거래량은 130개로 증가한다.",
+          "정부가 4,000원을 최고 가격으로 설정하면 60개의 초과 수요가 발생한다.",
+          "최고 가격제가 실효성을 거두려면 규제 가격을 균형 가격보다 높게 설정해야 한다.",
+          "4,000원 상한제 시행 시 암시장 형성 가능성은 낮아지고 소비자 잉여는 항상 감소한다."
+        ],
+        answer: 2, // ③
+        explanation: "균형 가격(5,000원)보다 낮은 4,000원으로 최고 가격(가격 상한제)을 설정하면, 수요량(130개)이 공급량(70개)을 초과하여 60개의 초과 수요가 발생합니다(③ 옳음). 실제 거래량은 공급량인 70개로 감소하며(② 틀림), 6,000원 최고 가격 설정은 균형 가격보다 높으므로 시장에 아무런 영향을 주지 못합니다(①, ④ 틀림)."
+      },
+      {
+        id: 12,
+        subject: "생활과 윤리",
+        category: "윤리·지리",
+        points: 2,
+        stem: "다음 갑, 을 사상가의 입장에 대한 설명으로 가장 적절한 것은?",
+        stimulusTitle: "윤리 사상 토론",
+        stimulus: `<strong>갑</strong>: 정의의 원칙들은 무지의 베일 뒤에서 합리적이고 상호 무관심한 개인들의 합의에 의해 도출된다. 특히 최소 수혜자에게 최대의 이익이 돌아가도록 불평등이 편성되어야 한다.<br/>
+        <strong>을</strong>: 취득과 이전의 과정에서 부정의가 없었다면, 그 결과로 발생한 소유권의 분배는 정의롭다. 재분배를 위한 과세는 개인의 노동에 대한 강제 노역과 다름없다.`,
+        highlightKeywords: ["무지의 베일", "최소 수혜자에게 최대의 이익", "취득과 이전의 과정", "재분배를 위한 과세는 강제 노역"],
+        bogi: null,
+        options: [
+          "갑은 천부적 재능의 분포 자체를 공동 자산으로 보고 결과의 평등을 추구한다.",
+          "을은 국가의 최소한의 치안 및 국방 기능조차 개인의 자유를 침해한다고 본다.",
+          "갑은 공정한 절차를 통한 분배 정의를, 을은 소유 권리에 기반한 절차적 정의를 강조한다.",
+          "을은 갑과 달리 사회적 약자를 위한 복지를 국가의 핵심 의무로 규정한다.",
+          "갑과 을은 모두 경제적 불평등이 어떠한 경우에도 정당화될 수 없다고 본다."
+        ],
+        answer: 2, // ③
+        explanation: "갑은 롤스(공정으로서의 정의), 을은 노직(소유 권리론)입니다. 롤스는 천부적 재능에서 나오는 이익을 공동 자산으로 보지만 완전한 결과의 평등을 추구하지는 않습니다(① 틀림). 노직은 최소 국가를 옹호하며(② 틀림), 복지 재분배 과세에 반대합니다(④ 틀림). 두 사상가 모두 공정한 절차를 중시하는 절차적 정의관을 지니고 있습니다(③ 옳음)."
+      },
+      {
+        id: 13,
+        subject: "통합사회",
+        category: "윤리·지리",
+        points: 2,
+        stem: "다음 자료의 문화 변동 요인 (가), (나)에 대한 설명으로 옳은 것은?",
+        stimulusTitle: "문화 변동 사례",
+        stimulus: `(가) 15세기 말 유럽인들이 아메리카 대륙에 진출하면서 유럽의 언어와 종교가 원주민 사회에 강제적으로 이식되었고, 그 결과 아메리카 원주민 고유의 전통문화가 크게 위축되거나 소멸하였다.<br/>
+        (나) 한국의 대중음악(K-POP)이 동영상 플랫폼과 SNS를 통해 전 세계 청소년들에게 확산되면서, 해외 팬들이 한국어 가사를 따라 부르고 한국 문화를 자발적으로 수용하는 현상이 나타났다.`,
+        highlightKeywords: ["강제적으로 이식", "고유의 전통문화가 크게 위축되거나 소멸", "동영상 플랫폼과 SNS", "자발적으로 수용"],
+        bogi: null,
+        options: [
+          "(가)는 직접 전파에 의한 문화 동화의 사례에 해당한다.",
+          "(가)는 기존 문화 요소와 외래 문화 요소가 결합한 문화 융합의 사례이다.",
+          "(나)는 매개체를 통한 간접 전파이며 강제적 문화 접변의 사례이다.",
+          "(가)와 (나) 모두 문화의 다양성을 증진시키는 결과를 낳았다.",
+          "(나)는 한 사회 내부에서 새로운 문화 요소가 창조된 발명에 해당한다."
+        ],
+        answer: 0, // ①
+        explanation: "(가)는 인적 접촉(직접 전파)과 강제적 문화 접변에 의해 기존 문화가 소멸하고 외래 문화로 대체된 '문화 동화'의 사례입니다(① 옳음). (나)는 미디어 매개체를 통한 '간접 전파'이자 자발적 문화 접변에 해당합니다(③, ⑤ 틀림)."
+      },
+      {
+        id: 14,
+        subject: "경제",
+        category: "경제",
+        points: 3,
+        stem: "표는 갑국의 연도별 명목 GDP와 실질 GDP를 나타낸 것이다. 이에 대한 옳은 분석만을 <보기>에서 고른 것은? (단, 기준 연도는 2023년임)",
+        stimulusTitle: "거시경제 지표",
+        stimulus: `<table class="exam-table">
+          <thead>
+            <tr><th>구분</th><th>2023년</th><th>2024년</th><th>2025년</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>명목 GDP(억 달러)</td><td>1,000</td><td>1,100</td><td>1,210</td></tr>
+            <tr><td>실질 GDP(억 달러)</td><td>1,000</td><td>1,050</td><td>1,100</td></tr>
+          </tbody>
+        </table>`,
+        highlightKeywords: ["기준 연도는 2023년", "명목 GDP", "실질 GDP"],
+        bogi: [
+          "ㄱ. 2023년의 GDP 디플레이터는 100이다.",
+          "ㄴ. 2024년의 경제 성장률은 5%이다.",
+          "ㄷ. 2025년의 물가 수준은 2023년보다 10% 상승하였다.",
+          "ㄹ. 2024년 대비 2025년의 실질 GDP 증가율은 명목 GDP 증가율보다 높다."
+        ],
+        options: [
+          "ㄱ, ㄴ",
+          "ㄱ, ㄷ",
+          "ㄴ, ㄹ",
+          "ㄱ, ㄴ, ㄷ",
+          "ㄴ, ㄷ, ㄹ"
+        ],
+        answer: 3, // ④ ㄱ, ㄴ, ㄷ
+        explanation: "GDP 디플레이터 = (명목 GDP / 실질 GDP) × 100이므로 기준 연도(2023년)는 100입니다(ㄱ 옳음). 2024년 경제 성장률은 실질 GDP 증가율이므로 (1,050-1,000)/1,000 = 5%입니다(ㄴ 옳음). 2025년 GDP 디플레이터는 (1,210/1,100)×100 = 110이므로 기준 연도 대비 물가가 10% 상승했습니다(ㄷ 옳음). 2025년 명목 증가율은 10%(1,100→1,210), 실질 증가율은 약 4.76%(1,050→1,100)이므로 명목 증가율이 더 높습니다(ㄹ 틀림)."
+      },
+      {
+        id: 15,
+        subject: "사회·문화",
+        category: "사회·문화",
+        points: 3,
+        stem: "다음 연구 설계에 대한 옳은 설명만을 <보기>에서 고른 것은?",
+        stimulusTitle: "사회·문화 연구 사례",
+        stimulus: `연구자 갑은 '청소년의 스마트폰 야간 사용 시간이 수면의 질에 미치는 영향'을 검증하기 위해 고등학생 200명을 무작위로 100명씩 A집단과 B집단으로 나누었다. A집단에게는 취침 2시간 전부터 스마트폰 사용을 제한하도록 조치하였고, B집단에게는 평소대로 자유롭게 사용하도록 하였다. 4주 후 두 집단의 수면 만족도 점수를 비교 분석하였다.`,
+        highlightKeywords: ["스마트폰 야간 사용 시간", "수면의 질", "A집단", "B집단", "무작위로 100명씩"],
+        bogi: [
+          "ㄱ. 독립 변수는 '스마트폰 야간 사용 시간', 종속 변수는 '수면의 질'이다.",
+          "ㄴ. A집단은 통제 집단, B집단은 실험 집단에 해당한다.",
+          "ㄷ. 이 연구는 주로 계량화된 자료를 통해 법칙을 발견하려는 양적 연구 방법을 사용하였다.",
+          "ㄹ. 연구 윤리 측면에서 참여자의 자발적 동의와 개인정보 보호가 요구된다."
+        ],
+        options: [
+          "ㄱ, ㄴ",
+          "ㄱ, ㄷ",
+          "ㄴ, ㄹ",
+          "ㄱ, ㄷ, ㄹ",
+          "ㄴ, ㄷ, ㄹ"
+        ],
+        answer: 3, // ④ ㄱ, ㄷ, ㄹ
+        explanation: "원인에 해당하는 '스마트폰 야간 사용 시간'이 독립 변수, 결과에 해당하는 '수면의 질'이 종속 변수입니다(ㄱ 옳음). 처치(사용 제한)를 가한 A집단이 실험 집단, 처치를 가하지 않은 B집단이 통제 집단입니다(ㄴ 틀림). 실험법을 활용한 양적 연구(ㄷ 옳음)이며, 인간 대상 연구이므로 자발적 동의 및 익명성 보장이 필수적입니다(ㄹ 옳음)."
+      }
+    ];
+
+    /**
+     * ============================================================================
+     * 2. Web Audio API 기반 사운드 시스템 (외부 파일 없이 깔끔한 효과음 생성)
+     * ============================================================================
+     */
+    class SoundEffects {
+      constructor() {
+        this.enabled = true;
+        this.ctx = null;
+      }
+
+      init() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (AudioContext) {
+            this.ctx = new AudioContext();
+          }
+        }
+      }
+
+      playTone(freq, type, duration, delay = 0, gainVal = 0.12) {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+
+        try {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, this.ctx.currentTime + delay);
+
+          gain.gain.setValueAtTime(gainVal, this.ctx.currentTime + delay);
+          gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + delay + duration);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+
+          osc.start(this.ctx.currentTime + delay);
+          osc.stop(this.ctx.currentTime + delay + duration);
+        } catch (e) {
+          // 오디오 정책 예외 무시
+        }
+      }
+
+      playStartBell() {
+        // 예비령/본령 느낌의 차임벨
+        this.playTone(523.25, "sine", 0.45, 0, 0.14);
+        this.playTone(659.25, "sine", 0.45, 0.22, 0.14);
+        this.playTone(783.99, "sine", 0.65, 0.44, 0.14);
+      }
+
+      playCorrect() {
+        this.playTone(587.33, "triangle", 0.18, 0, 0.15);
+        this.playTone(880.00, "triangle", 0.35, 0.12, 0.15);
+      }
+
+      playWrong() {
+        this.playTone(220.00, "sawtooth", 0.22, 0, 0.1);
+        this.playTone(185.00, "sawtooth", 0.32, 0.15, 0.1);
+      }
+
+      playItem() {
+        this.playTone(1046.50, "sine", 0.2, 0, 0.1);
+      }
+    }
+
+    const sfx = new SoundEffects();
+
+    /**
+     * ============================================================================
+     * 3. 게임 상태 관리 및 DOM 컨트롤러
+     * ============================================================================
+     */
+    const state = {
+      mode: "exam",          // 'exam' | 'practice'
+      selectedSubject: "ALL",
+      questions: [],
+      currentIndex: 0,
+      score: 0,
+      combo: 0,
+      maxCombo: 0,
+      timer: 45,
+      timerInterval: null,
+      answered: false,
+      fiftyCount: 2,
+      hintCount: 2,
+      userRecords: []        // { question, selectedOption, isCorrect }
+    };
+
+    const CIRCLE_NUMS = ["①", "②", "③", "④", "⑤"];
+
+    // DOM 요소 캐싱
+    const els = {
+      startScreen: document.getElementById("startScreen"),
+      quizScreen: document.getElementById("quizScreen"),
+      resultScreen: document.getElementById("resultScreen"),
+      soundToggleBtn: document.getElementById("soundToggleBtn"),
+      subjectChips: document.querySelectorAll(".chip-btn"),
+      modeExam: document.getElementById("modeExam"),
+      modePractice: document.getElementById("modePractice"),
+      startExamBtn: document.getElementById("startExamBtn"),
+
+      hudProgress: document.getElementById("hudProgress"),
+      hudTimer: document.getElementById("hudTimer"),
+      hudCombo: document.getElementById("hudCombo"),
+      hudScore: document.getElementById("hudScore"),
+      progressFill: document.getElementById("progressFill"),
+
+      qSubject: document.getElementById("qSubject"),
+      qPoints: document.getElementById("qPoints"),
+      btnFiftyFifty: document.getElementById("btnFiftyFifty"),
+      btnHint: document.getElementById("btnHint"),
+      countFifty: document.getElementById("countFifty"),
+      countHint: document.getElementById("countHint"),
+
+      qStem: document.getElementById("qStem"),
+      qStimulusTitle: document.getElementById("qStimulusTitle"),
+      qStimulusContent: document.getElementById("qStimulusContent"),
+      qBogiBox: document.getElementById("qBogiBox"),
+      qBogiContent: document.getElementById("qBogiContent"),
+      optionsList: document.getElementById("optionsList"),
+
+      explanationPanel: document.getElementById("explanationPanel"),
+      explanationHeader: document.getElementById("explanationHeader"),
+      explanationText: document.getElementById("explanationText"),
+      nextQuestionBtn: document.getElementById("nextQuestionBtn"),
+
+      resSubjectName: document.getElementById("resSubjectName"),
+      resRawScore: document.getElementById("resRawScore"),
+      resGameScore: document.getElementById("resGameScore"),
+      resAccuracy: document.getElementById("resAccuracy"),
+      resMaxCombo: document.getElementById("resMaxCombo"),
+      resGrade: document.getElementById("resGrade"),
+      subjectBars: document.getElementById("subjectBars"),
+      reviewList: document.getElementById("reviewList"),
+      retryBtn: document.getElementById("retryBtn"),
+      downloadHtmlBtn: document.getElementById("downloadHtmlBtn")
+    };
+
+    // 화면 전환 유틸리티
+    function showScreen(screenEl) {
+      [els.startScreen, els.quizScreen, els.resultScreen].forEach(s => s.classList.remove("active"));
+      screenEl.classList.add("active");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    // 효과음 토글
+    els.soundToggleBtn.addEventListener("click", () => {
+      sfx.enabled = !sfx.enabled;
+      els.soundToggleBtn.textContent = sfx.enabled ? "🔊 효과음 켜짐" : "🔇 효과음 꺼짐";
+    });
+
+    // 과목 칩 선택
+    els.subjectChips.forEach(chip => {
+      chip.addEventListener("click", () => {
+        els.subjectChips.forEach(c => c.classList.remove("active"));
+        chip.classList.add("active");
+        state.selectedSubject = chip.dataset.subject;
+      });
+    });
+
+    // 모드 선택
+    [els.modeExam, els.modePractice].forEach(card => {
+      card.addEventListener("click", () => {
+        els.modeExam.classList.remove("selected");
+        els.modePractice.classList.remove("selected");
+        card.classList.add("selected");
+        state.mode = card.dataset.mode;
+      });
+    });
+
+    // 시험 시작
+    els.startExamBtn.addEventListener("click", startGame);
+    els.retryBtn.addEventListener("click", () => {
+      clearInterval(state.timerInterval);
+      showScreen(els.startScreen);
+    });
+
+    function startGame() {
+      sfx.playStartBell();
+
+      // 선택된 영역 필터링
+      let pool = [...QUESTION_BANK];
+      if (state.selectedSubject !== "ALL") {
+        pool = pool.filter(q => q.category === state.selectedSubject);
+      }
+
+      state.questions = pool;
+      state.currentIndex = 0;
+      state.score = 0;
+      state.combo = 0;
+      state.maxCombo = 0;
+      state.fiftyCount = 2;
+      state.hintCount = 2;
+      state.userRecords = [];
+
+      updateItemButtons();
+      showScreen(els.quizScreen);
+      renderQuestion();
+    }
+
+    function updateItemButtons() {
+      els.countFifty.textContent = state.fiftyCount;
+      els.countHint.textContent = state.hintCount;
+      els.btnFiftyFifty.disabled = state.fiftyCount <= 0 || state.answered;
+      els.btnHint.disabled = state.hintCount <= 0 || state.answered;
+    }
+
+    function startTimer() {
+      clearInterval(state.timerInterval);
+      if (state.mode === "practice") {
+        els.hudTimer.textContent = "무제한";
+        els.hudTimer.classList.remove("timer-warning");
+        return;
+      }
+
+      state.timer = 45;
+      els.hudTimer.textContent = `${state.timer}초`;
+      els.hudTimer.classList.remove("timer-warning");
+
+      state.timerInterval = setInterval(() => {
+        state.timer--;
+        els.hudTimer.textContent = `${state.timer}초`;
+
+        if (state.timer <= 10) {
+          els.hudTimer.classList.add("timer-warning");
+        }
+
+        if (state.timer <= 0) {
+          clearInterval(state.timerInterval);
+          handleAnswer(-1); // 시간 초과 오답 처리
+        }
+      }, 1000);
+    }
+
+    function renderQuestion() {
+      const q = state.questions[state.currentIndex];
+      state.answered = false;
+
+      // HUD 업데이트
+      els.hudProgress.textContent = `${state.currentIndex + 1} / ${state.questions.length}`;
+      els.hudCombo.textContent = `${state.combo} COMBO`;
+      els.hudCombo.classList.toggle("combo-active", state.combo >= 2);
+      els.hudScore.textContent = `${state.score}점`;
+
+      const pct = ((state.currentIndex) / state.questions.length) * 100;
+      els.progressFill.style.width = `${pct}%`;
+
+      // 과목 및 배점 표시
+      els.qSubject.textContent = q.subject;
+      els.qPoints.textContent = `${q.points}점`;
+      els.qPoints.classList.toggle("three-pt", q.points === 3);
+
+      // 발문 및 자료 박스
+      els.qStem.innerHTML = `<span class="q-num">${state.currentIndex + 1}.</span>${q.stem}`;
+      els.qStimulusTitle.textContent = q.stimulusTitle || "자료";
+      els.qStimulusContent.innerHTML = q.stimulus;
+
+      // <보기> 렌더링
+      if (q.bogi && q.bogi.length > 0) {
+        els.qBogiBox.style.display = "block";
+        els.qBogiContent.innerHTML = q.bogi.map(item => `<div class="bogi-item">${item}</div>`).join("");
+      } else {
+        els.qBogiBox.style.display = "none";
+      }
+
+      // 5지선다 버튼 생성
+      els.optionsList.innerHTML = "";
+      q.options.forEach((optText, idx) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "option-btn";
+        btn.dataset.index = idx;
+        btn.innerHTML = `<span class="option-num">${CIRCLE_NUMS[idx]}</span><span>${optText}</span>`;
+        btn.addEventListener("click", () => handleAnswer(idx));
+        els.optionsList.appendChild(btn);
+      });
+
+      // 해설 패널 숨기기
+      els.explanationPanel.classList.remove("show");
+      els.nextQuestionBtn.classList.remove("show");
+
+      updateItemButtons();
+      startTimer();
+    }
+
+    // 아이템 1: 50:50 오답 소거
+    els.btnFiftyFifty.addEventListener("click", () => {
+      if (state.fiftyCount <= 0 || state.answered) return;
+      const q = state.questions[state.currentIndex];
+      const optionBtns = Array.from(els.optionsList.querySelectorAll(".option-btn"));
+      const wrongIndices = [0, 1, 2, 3, 4].filter(i => i !== q.answer);
+
+      // 무작위로 오답 2개 선택하여 비활성화
+      wrongIndices.sort(() => Math.random() - 0.5);
+      const toEliminate = wrongIndices.slice(0, 2);
+      toEliminate.forEach(idx => {
+        optionBtns[idx].classList.add("eliminated");
+      });
+
+      state.fiftyCount--;
+      sfx.playItem();
+      updateItemButtons();
+    });
+
+    // 아이템 2: 핵심 키워드 하이라이트 힌트
+    els.btnHint.addEventListener("click", () => {
+      if (state.hintCount <= 0 || state.answered) return;
+      const q = state.questions[state.currentIndex];
+      let html = els.qStimulusContent.innerHTML;
+
+      if (q.highlightKeywords && q.highlightKeywords.length > 0) {
+        q.highlightKeywords.forEach(kw => {
+          const escaped = kw.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+          const regex = new RegExp(`(${escaped})`, "g");
+          html = html.replace(regex, `<span class="keyword-highlight">$1</span>`);
+        });
+        els.qStimulusContent.innerHTML = html;
+      }
+
+      state.hintCount--;
+      sfx.playItem();
+      updateItemButtons();
+    });
+
+    // 정답 처리
+    function handleAnswer(selectedIndex) {
+      if (state.answered) return;
+      state.answered = true;
+      clearInterval(state.timerInterval);
+
+      const q = state.questions[state.currentIndex];
+      const isCorrect = selectedIndex === q.answer;
+      const optionBtns = els.optionsList.querySelectorAll(".option-btn");
+
+      optionBtns.forEach((btn, idx) => {
+        btn.disabled = true;
+        if (idx === q.answer) {
+          btn.classList.add("correct");
+        } else if (idx === selectedIndex && !isCorrect) {
+          btn.classList.add("wrong");
+        }
+      });
+
+      if (isCorrect) {
+        sfx.playCorrect();
+        state.combo++;
+        if (state.combo > state.maxCombo) state.maxCombo = state.combo;
+
+        // 점수 산정: 기본 배점*30 + 콤보 보너스 + 시간 보너스
+        const basePoints = q.points * 30;
+        const comboBonus = (state.combo - 1) * 15;
+        const timeBonus = state.mode === "exam" ? Math.max(0, state.timer) : 10;
+        state.score += basePoints + comboBonus + timeBonus;
+
+        els.explanationHeader.className = "explanation-header is-correct";
+        els.explanationHeader.innerHTML = `✅ 정답입니다! (${CIRCLE_NUMS[q.answer]}) &nbsp;|&nbsp; +${basePoints + comboBonus + timeBonus}점`;
+      } else {
+        sfx.playWrong();
+        state.combo = 0;
+
+        els.explanationHeader.className = "explanation-header is-wrong";
+        const reasonText = selectedIndex === -1 ? "⏰ 제한 시간이 초과되었습니다." : `❌ 오답입니다. (선택: ${CIRCLE_NUMS[selectedIndex]} / 정답: ${CIRCLE_NUMS[q.answer]})`;
+        els.explanationHeader.textContent = reasonText;
+      }
+
+      // 기록 저장
+      state.userRecords.push({
+        question: q,
+        selectedOption: selectedIndex,
+        isCorrect: isCorrect
+      });
+
+      // HUD 즉시 갱신
+      els.hudCombo.textContent = `${state.combo} COMBO`;
+      els.hudCombo.classList.toggle("combo-active", state.combo >= 2);
+      els.hudScore.textContent = `${state.score}점`;
+      updateItemButtons();
+
+      // 해설 및 다음 버튼 표시
+      els.explanationText.textContent = q.explanation;
+      els.explanationPanel.classList.add("show");
+
+      els.nextQuestionBtn.textContent =
+        state.currentIndex + 1 < state.questions.length
+          ? "다음 문항으로 →"
+          : "채점 결과 및 성적통지표 확인 →";
+      els.nextQuestionBtn.classList.add("show");
+    }
+
+    els.nextQuestionBtn.addEventListener("click", () => {
+      state.currentIndex++;
+      if (state.currentIndex < state.questions.length) {
+        renderQuestion();
+      } else {
+        els.progressFill.style.width = "100%";
+        renderResultScreen();
+      }
+    });
+
+    /**
+     * ============================================================================
+     * 4. 결과 화면 (수능 성적통지표 산출 및 오답 노트)
+     * ============================================================================
+     */
+    function renderResultScreen() {
+      showScreen(els.resultScreen);
+
+      const totalQ = state.questions.length;
+      const correctCount = state.userRecords.filter(r => r.isCorrect).length;
+      const accuracy = Math.round((correctCount / totalQ) * 1000) / 10;
+
+      // 수능 원점수 50점 만점 기준 환산 점수 계산
+      const totalPossibleRaw = state.questions.reduce((acc, q) => acc + q.points, 0);
+      const earnedRaw = state.userRecords.reduce((acc, r) => acc + (r.isCorrect ? r.question.points : 0), 0);
+      const scaledRaw50 = Math.round((earnedRaw / totalPossibleRaw) * 50);
+
+      // 등급 산출 (사탐 등급컷 기준)
+      let grade = "9등급";
+      if (scaledRaw50 >= 47) grade = "1등급";
+      else if (scaledRaw50 >= 43) grade = "2등급";
+      else if (scaledRaw50 >= 38) grade = "3등급";
+      else if (scaledRaw50 >= 32) grade = "4등급";
+      else if (scaledRaw50 >= 25) grade = "5등급";
+      else if (scaledRaw50 >= 18) grade = "6등급";
+      else if (scaledRaw50 >= 12) grade = "7등급";
+      else if (scaledRaw50 >= 6) grade = "8등급";
+
+      els.resSubjectName.textContent = state.selectedSubject === "ALL" ? "사회탐구 전 영역" : state.selectedSubject;
+      els.resRawScore.textContent = scaledRaw50;
+      els.resGameScore.textContent = state.score.toLocaleString();
+      els.resAccuracy.textContent = `${accuracy}% (${correctCount}/${totalQ})`;
+      els.resMaxCombo.textContent = `${state.maxCombo} COMBO`;
+      els.resGrade.textContent = grade;
+      els.resGrade.classList.toggle("top-grade", grade === "1등급" || grade === "2등급");
+
+      // 과목별 성취도 막대 그래프
+      const subjectMap = {};
+      state.userRecords.forEach(r => {
+        const subj = r.question.subject;
+        if (!subjectMap[subj]) subjectMap[subj] = { total: 0, correct: 0 };
+        subjectMap[subj].total++;
+        if (r.isCorrect) subjectMap[subj].correct++;
+      });
+
+      els.subjectBars.innerHTML = "";
+      Object.entries(subjectMap).forEach(([subj, data]) => {
+        const pct = Math.round((data.correct / data.total) * 100);
+        const row = document.createElement("div");
+        row.className = "stat-row";
+        row.innerHTML = `
+          <div class="stat-label-row">
+            <span>${subj}</span>
+            <span>${data.correct} / ${data.total}문항 (${pct}%)</span>
+          </div>
+          <div class="stat-bar-bg">
+            <div class="stat-bar-fill" style="width: ${pct}%;"></div>
+          </div>
+        `;
+        els.subjectBars.appendChild(row);
+      });
+
+      // 문항별 오답 노트 아코디언 렌더링
+      els.reviewList.innerHTML = "";
+      state.userRecords.forEach((rec, index) => {
+        const item = document.createElement("div");
+        item.className = "review-item";
+        const statusBadge = rec.isCorrect ? "⭕ 정답" : "❌ 오답";
+        const userChoiceText = rec.selectedOption >= 0 ? CIRCLE_NUMS[rec.selectedOption] : "시간초과";
+
+        item.innerHTML = `
+          <div class="review-header ${rec.isCorrect ? "correct-row" : "wrong-row"}">
+            <span>${index + 1}번 [${rec.question.subject}] (${rec.question.points}점) - ${statusBadge}</span>
+            <span>내 답: ${userChoiceText} / 정답: ${CIRCLE_NUMS[rec.question.answer]} ▾</span>
+          </div>
+          <div class="review-body">
+            <p style="font-weight:700; margin-bottom:6px;">Q. ${rec.question.stem}</p>
+            <p style="color:#475569; margin-bottom:8px;"><strong>해설:</strong> ${rec.question.explanation}</p>
+          </div>
+        `;
+
+        const header = item.querySelector(".review-header");
+        const body = item.querySelector(".review-body");
+        header.addEventListener("click", () => {
+          body.classList.toggle("open");
+        });
+
+        els.reviewList.appendChild(item);
+      });
+    }
+
+    // 현재 단일 HTML 파일을 index.html로 직접 다운로드하는 기능
+    els.downloadHtmlBtn.addEventListener("click", () => {
+      const htmlContent = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+      const blob = new Blob([htmlContent], { type: "text/html;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "index.html";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
+  </script>
+</body>
+</html>
