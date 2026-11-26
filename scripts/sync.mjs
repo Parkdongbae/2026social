@@ -453,7 +453,8 @@ async function main() {
       sourceName: s.sourceName,
     }));
   const same = (a, b) => JSON.stringify(a) === JSON.stringify(b ?? []);
-  if (!same(clean, prevData.games) || !same(cleanHidden, prevData.hidden) || !same(rejected, prevData.rejected)) {
+  const firstRun = !prevData.updatedAt; // 목록 파일이 아직 없음 → 비어 있어도 한 번은 만든다
+  if (firstRun || !same(clean, prevData.games) || !same(cleanHidden, prevData.hidden) || !same(rejected, prevData.rejected)) {
     await writeFile(GAMES_JSON, JSON.stringify({ updatedAt: now, games: clean, hidden: cleanHidden, rejected }, null, 2) + "\n");
   }
   if (JSON.stringify(skipped) !== JSON.stringify(prevReport.skipped ?? [])) {
