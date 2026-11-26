@@ -713,6 +713,7 @@ function editOverride(key, patch, msg) {
   return saveOverrides(next, msg).catch((e) => { console.warn(e); toast("저장하지 못했어요 (관리자 권한 확인)"); });
 }
 let syncTimer = null;
+let syncRequested = false; // 이 화면에서 '바로 반영'을 눌렀는지 (끝나면 새 목록을 저절로 불러옴)
 async function refreshSyncStatus() {
   const s = admBody.querySelector("#syncStatus");
   if (!s) return;
@@ -726,7 +727,14 @@ async function refreshSyncStatus() {
       s.textContent = `⏳ ${when} ${how} 실행 중… (보통 1분 안팎)`;
       clearTimeout(syncTimer); syncTimer = setTimeout(refreshSyncStatus, 5000);
     } else {
-      s.textContent = r.conclusion === "success" ? `✅ ${when} ${how} 완료 — 1분쯤 뒤 새로고침하면 보여요` : `⚠️ ${when} ${how} 실패 (${r.conclusion})`;
+      if (r.conclusion !== "success") { s.textContent = `⚠️ ${when} ${how} 실패 (${r.conclusion}) — 다시 눌러 보세요`; return; }
+      if (syncRequested) {
+        syncRequested = false;
+        s.textContent = `⏳ ${when} 드라이브 확인 완료 — 새 목록을 사이트에 올리는 중…`;
+        waitForNewData();
+      } else if (!waitingForData) {
+        s.textContent = `✅ ${when} ${how} 완료`;
+      }
     }
   } catch (e) { s.textContent = `상태를 확인하지 못했어요: ${e.message}`; }
 }
@@ -742,11 +750,17 @@ function renderAdmin() {
   status.id = "syncStatus";
   syncBtn.addEventListener("click", async () => {
     syncBtn.disabled = true;
-    try { await apiCall("POST", { op: "sync" }); toast("드라이브 폴더를 지금 확인하고 있어요"); setTimeout(refreshSyncStatus, 3000); }
+    try {
+      await apiCall("POST", { op: "sync" });
+      syncRequested = true;
+      status.textContent = "⏳ 드라이브 폴더를 확인하라고 요청했어요…";
+      toast("드라이브 폴더를 지금 확인하고 있어요");
+      setTimeout(refreshSyncStatus, 4000);
+    }
     catch (e) { toast(e.message); }
     finally { setTimeout(() => { syncBtn.disabled = false; }, 4000); }
   });
-  syncBox.append(syncBtn, status, el("p", "muted", "학생이 제출 폴더에 새로 올린 파일을 지금 바로 가져옵니다. 누르지 않아도 10분마다 자동으로 확인해요. 아래 숨기기·이름 바꾸기는 누르는 즉시 화면에 반영됩니다."));
+  syncBox.append(syncBtn, status, el("p", "muted", "학생이 제출 폴더에 새로 올린 파일을 지금 바로 가져옵니다(1~2분). 끝나면 이 창과 첫 화면이 저절로 새 목록을 보여 줘요. 파일을 막 올렸다면 구글 드라이브에 나타나기까지 1분쯤 기다린 뒤 누르세요. 아래 숨기기·이름 바꾸기는 누르는 즉시 반영됩니다."));
 
   // 2) 파일 이름 규칙
   const rules = el("ul", "rules");
@@ -938,15 +952,46 @@ loginBtn.addEventListener("click", () => { if (!fb) return; if (state.user) fb.a
 
 render();
 const fbReady = initFirebase();
-try {
-  const res = await fetch("./games.json", { cache: "no-store" });
+// 목록 읽기 (처음 열 때, 그리고 '바로 반영'이 끝난 뒤 다시)
+async function loadGames() {
+  const res = await fetch(`./games.json?t=${Date.now()}`, { cache: "no-store" });
   if (!res.ok) throw new Error(String(res.status));
   const data = await res.json();
   const tidy = (g) => ({ ...g, title: String(g.title || ""), name: String(g.name || ""), studentNo: String(g.studentNo || ""), desc: String(g.desc || ""), category: String(g.category || "etc") });
+  state.dataUpdatedAt = String(data.updatedAt || "");
   state.base = (Array.isArray(data.games) ? data.games : []).filter((g) => g && typeof g.id === "string" && FILE_RE.test(String(g.file))).map(tidy);
   state.hiddenBase = (Array.isArray(data.hidden) ? data.hidden : []).filter((g) => g && typeof g.id === "string").map(tidy);
   state.rejectedBase = (Array.isArray(data.rejected) ? data.rejected : []).filter((r) => r && r.who)
     .map((r) => ({ who: String(r.who), reason: String(r.reason || ""), fix: String(r.fix || ""), driveId: String(r.driveId || ""), sourceName: String(r.sourceName || "") }));
+}
+// '바로 반영' 뒤: 새 목록이 배포될 때까지(보통 1~2분) 기다렸다가 화면을 저절로 새로 그린다
+let waitingForData = false;
+async function waitForNewData() {
+  if (waitingForData) return;
+  waitingForData = true;
+  const before = state.dataUpdatedAt;
+  const s = () => admBody.querySelector("#syncStatus");
+  for (let i = 0; i < 16; i++) { // 최대 약 2분
+    await new Promise((r) => setTimeout(r, 7500));
+    try {
+      const res = await fetch(`./games.json?t=${Date.now()}`, { cache: "no-store" });
+      const data = res.ok ? await res.json() : null;
+      if (data && String(data.updatedAt || "") !== before) {
+        await loadGames();
+        refreshAll();
+        if (admDlg.open) { renderAdmin(); refreshSyncStatus(); }
+        toast("새 목록을 불러왔어요");
+        waitingForData = false;
+        return;
+      }
+      if (s() && i > 0) s().textContent = `⏳ 새 목록을 사이트에 올리는 중… (${Math.round((i + 1) * 7.5)}초)`;
+    } catch {}
+  }
+  waitingForData = false;
+  if (s()) s().textContent = "✅ 반영 완료 — 바뀐 파일이 없었거나 아직 올리는 중이에요. 잠시 뒤 새로고침해 보세요";
+}
+try {
+  await loadGames();
 } catch (e) {
   if (!(e instanceof Error && e.message === "404")) console.warn("games.json 읽기 실패", e);
   if (!(e instanceof Error && e.message === "404")) state.loadError = true; // 아직 한 번도 동기화 안 됨(404)은 빈 목록
