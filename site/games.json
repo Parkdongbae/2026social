@@ -1,14 +1,22 @@
 {
-  "updatedAt": "2026-11-26T05:02:52.783Z",
-  "games": [],
-  "hidden": [],
-  "rejected": [
+  "updatedAt": "2026-11-26T05:04:44.657Z",
+  "games": [
     {
-      "who": "피카츄_8급한자_게임 - 교사박동배.html",
-      "reason": "파일명에서 학번·이름을 찾지 못함",
-      "fix": "파일 이름 끝을 '학번이름.html'로 바꿔 주세요. 예) 내앱 - 3115홍길동.html",
+      "id": "3300",
+      "studentNo": "3300",
+      "name": "홍길동",
+      "title": "피카츄와 함께하는 8급 한자 대모험",
+      "desc": "~ 전기 에너지를 100% 모아 악몽을 물리치자! ~",
+      "category": "geo",
+      "file": "3300.html",
       "driveId": "1VFEbdv1FkHfVv2u7tOulO_gRkjnmR1Cn",
-      "sourceName": "피카츄_8급한자_게임 - 교사박동배.html"
+      "sourceName": "피카츄_8급한자_게임 - 교사박동배.html",
+      "hash": "78b6bce54410b031",
+      "size": 114747,
+      "addedAt": "2026-11-26T05:04:44.657Z",
+      "updatedAt": "2026-11-26T05:04:44.657Z"
     }
-  ]
+  ],
+  "hidden": [],
+  "rejected": []
 }
