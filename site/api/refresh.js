@@ -50,13 +50,14 @@ export default async function handler(req, res) {
   if (!process.env.GITHUB_TOKEN) return res.status(200).json({ disabled: true });
   try {
     const runs = await github(`/actions/workflows/${WORKFLOW}/runs?per_page=1`);
+    if (!runs.ok) return res.status(200).json({ error: `GitHub 토큰 확인 실패 (${runs.status})` });
     const last = runs.ok ? (await runs.json()).workflow_runs?.[0] : null;
     if (last && (last.status !== "completed" || Date.now() - Date.parse(last.created_at) < COOLDOWN_MS)) {
       return res.status(200).json({ recent: true, running: last.status !== "completed" });
     }
     const [ids, known] = await Promise.all([folderHtmlIds(), knownIds(req.headers.host)]);
     const fresh = ids.filter((id) => !known.has(id));
-    if (!fresh.length) return res.status(200).json({ upToDate: true });
+    if (!fresh.length) return res.status(200).json({ upToDate: true, tokenOk: true });
     const r = await github(`/actions/workflows/${WORKFLOW}/dispatches`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
